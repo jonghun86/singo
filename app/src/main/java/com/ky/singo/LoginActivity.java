@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,16 +28,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -195,7 +195,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
   private boolean isEmailValid(String email) {
     //TODO: Replace this with your own logic
-    return email.contains("@");
+    return true;
   }
 
   private boolean isPasswordValid(String password) {
@@ -297,7 +297,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
    * Represents an asynchronous login/registration task used to authenticate
    * the user.
    */
-  public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+  public class UserLoginTask extends AsyncTask<Void, Void, HttpResponse> {
 
     private final String mEmail;
     private final String mPassword;
@@ -307,55 +307,72 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
       mPassword = password;
     }
 
-    @Override
-    protected Boolean doInBackground(Void... not_used) {
-      // TODO: attempt authentication against a network service.
-
-      ArrayList<NameValuePair> post = new ArrayList<NameValuePair>();
-      post.add(new BasicNameValuePair("memId", "mmyjh86"));
-      post.add(new BasicNameValuePair("memPw", "whdgns4342"));
-      post.add(new BasicNameValuePair("execmode", "Y"));
-      post.add(new BasicNameValuePair("isPeti", "N"));
-
-      // 연결 HttpClient 객체 생성
-      HttpClient client = new DefaultHttpClient();
-
-      // 객체 연결 설정 부분, 연결 최대시간 등등
-      HttpParams params = client.getParams();
-      HttpConnectionParams.setConnectionTimeout(params, 5000);
-      HttpConnectionParams.setSoTimeout(params, 5000);
-
-      // Post객체 생성
-      HttpPost httpPost = new HttpPost("https://www.epeople.go.kr/ULogin.do");
+    // TODO : parameterize
+    // Return
+    //  - true   : if login request is transmitted to the server
+    //  - false  : else
+    private HttpResponse requestLogin() {
+      final String url = "https://www.epeople.go.kr/ULogin.do";
+      ArrayList<NameValuePair> param;
+      UrlEncodedFormEntity entity;
+      HttpResponse responsePost;
 
       try {
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(post, "UTF-8");
-        httpPost.setEntity(entity);
-        client.execute(httpPost);
-        //return EntityUtils.getContentCharSet(entity);
-      } catch (ClientProtocolException e) {
-        e.printStackTrace();
+        // create HTTP header
+        HttpClient httpClient = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost(url);
+
+        param = new ArrayList<NameValuePair>();
+        param.add(new BasicNameValuePair("memId", mEmail));
+        param.add(new BasicNameValuePair("memPw", mPassword));
+        param.add(new BasicNameValuePair("execmode", "Y"));
+        param.add(new BasicNameValuePair("isPeti", "N"));
+
+        httpPost.setEntity(new UrlEncodedFormEntity(param));
+        responsePost = httpClient.execute(httpPost);
+
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        return null;
+      }
+
+
+      return responsePost;
+    }
+
+    @Override
+    protected HttpResponse doInBackground(Void... not_used) {
+      return requestLogin();
+    }
+
+    @Override
+    protected void onPostExecute(final HttpResponse httpResponse) {
+      mAuthTask = null;
+      showProgress(false);
+
+
+
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      try {
+        httpResponse.getEntity().writeTo(out);
+        out.close();
       } catch (IOException e) {
         e.printStackTrace();
       }
 
+      String str = out.toString();
+      Log.d("DEBUG", str);
 
+      //EntityUtils.getContentCharSet(entity);
 
-      // TODO: register the new account here.
-      return true;
-    }
-
-    @Override
-    protected void onPostExecute(final Boolean success) {
-      mAuthTask = null;
-      showProgress(false);
-
+      /*
       if (success) {
         finish();
       } else {
         mPasswordView.setError(getString(R.string.error_incorrect_password));
         mPasswordView.requestFocus();
       }
+      */
     }
 
     @Override
