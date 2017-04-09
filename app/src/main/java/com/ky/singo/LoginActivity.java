@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -35,8 +36,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
    * Id to identity READ_CONTACTS permission request.
    */
   private static final int REQUEST_READ_CONTACTS = 0;
+
+  /**
+   * String to identity log message
+   */
+  private final String ID_USER_LOGIN = "LOGIN";
 
   /**
    * Keep track of the login task to ensure we can cancel it if requested.
@@ -301,7 +307,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private final String mEmail;
     private final String mPassword;
-
     UserLoginTask(String email, String password) {
       mEmail = email;
       mPassword = password;
@@ -351,17 +356,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
       showProgress(false);
 
 
-
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
       try {
-        httpResponse.getEntity().writeTo(out);
-        out.close();
+        final HttpEntity entity = httpResponse.getEntity();
+        if (entity == null) {
+          Log.w(ID_USER_LOGIN, "Entity error");
+          // TODO
+          // Add error handling code
+        }
+        else {
+          String responseBody = EntityUtils.toString(entity);
+          Log.d(ID_USER_LOGIN, responseBody.toString());
+        }
       } catch (IOException e) {
         e.printStackTrace();
       }
-
-      String str = out.toString();
-      Log.d("DEBUG", str);
 
       //EntityUtils.getContentCharSet(entity);
 
