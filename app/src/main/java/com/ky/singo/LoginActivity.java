@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -366,6 +367,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         else {
           String responseBody = EntityUtils.toString(entity);
           Log.d(ID_USER_LOGIN, responseBody.toString());
+
+          // TODO
+          // add error handling code when login process is failed,
+
+
+          // move to ReportListActivity when login process is successfully done.
+          Intent intent = new Intent(LoginActivity.this, ReportListActivity.class);
+          startActivity(intent);
+
         }
       } catch (IOException e) {
         e.printStackTrace();
