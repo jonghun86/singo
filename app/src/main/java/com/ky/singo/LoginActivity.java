@@ -29,17 +29,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.apache.http.HttpEntity;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -358,26 +357,48 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
 
       try {
-        final HttpEntity entity = httpResponse.getEntity();
-        if (entity == null) {
-          Log.w(ID_USER_LOGIN, "Entity error");
-          // TODO
-          // Add error handling code
+        int statusCode = httpResponse.getStatusLine().getStatusCode();
+        // (JH)
+        // This below code does not guarantee that login process is successfully done.
+        if (statusCode == HttpStatus.SC_OK) {
+          Header[] headers = httpResponse.getHeaders("Set-Cookie");
+
+          // error because multiple headers (that includes cookie) are transmitted.
+          if (headers.length > 1) {
+            Log.e(ID_USER_LOGIN, "multiple cookie headers are transmitted");
+            throw new Exception();
+          }
+
+          // sends a cookie to ReportListActivity
+          Log.d(ID_USER_LOGIN, headers[0].toString());
+          Intent intent = new Intent(LoginActivity.this, ReportListActivity.class);
+          intent.putExtra("cookie", headers[0].toString());
+          startActivity(intent);
         }
-        else {
-          String responseBody = EntityUtils.toString(entity);
-          Log.d(ID_USER_LOGIN, responseBody.toString());
+        else  {
+          Log.e(ID_USER_LOGIN, "invalid response (status: " + statusCode + " != 200)");
+          throw new Exception();
+        }
+
+
+
+
+
+            //String responseBody = EntityUtils.toString(entity);
+          //Log.d(ID_USER_LOGIN, responseBody.toString());
+
+
+          //Header[] mCookies = httpResponse.getHeaders("cookie");
 
           // TODO
           // add error handling code when login process is failed,
 
-
           // move to ReportListActivity when login process is successfully done.
-          Intent intent = new Intent(LoginActivity.this, ReportListActivity.class);
-          startActivity(intent);
+          //Intent intent = new Intent(LoginActivity.this, ReportListActivity.class);
+          //startActivity(intent);
 
-        }
-      } catch (IOException e) {
+
+      } catch (Exception e) {
         e.printStackTrace();
       }
 

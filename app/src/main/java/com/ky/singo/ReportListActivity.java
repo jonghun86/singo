@@ -1,5 +1,6 @@
 package com.ky.singo;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -31,6 +33,7 @@ public class ReportListActivity extends AppCompatActivity {
    */
   private final String ID_REPORT_LIST_QUERY = "REPORT_LIST";
 
+  private String cookie;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +52,9 @@ public class ReportListActivity extends AppCompatActivity {
     });
 
     try {
-      new ReportListRequestTask().execute();
+      Intent intent = getIntent();
+      String cookie = intent.getStringExtra("cookie");
+      new ReportListRequestTask(cookie).execute();
     } catch(Exception e) {
       e.printStackTrace();
     }
@@ -64,9 +69,10 @@ public class ReportListActivity extends AppCompatActivity {
    * the user.
    */
   public class ReportListRequestTask extends AsyncTask<Void, Void, HttpResponse> {
+    private String cookie;
 
-
-    ReportListRequestTask() {
+    ReportListRequestTask(String cookie) {
+      this.cookie = cookie;
     }
 
     // TODO : parameterize
@@ -87,7 +93,7 @@ public class ReportListActivity extends AppCompatActivity {
         param.add(new BasicNameValuePair("menuCode", "PC"));
         String parameter = URLEncodedUtils.format(param, "UTF-8");
         HttpGet httpGet = new HttpGet(String.valueOf(url) + "?" + parameter);
-
+        httpGet.setHeader("cookie", cookie);
         responseGet = client.execute(httpGet);
       } catch(Exception e){
         e.printStackTrace();
@@ -117,6 +123,11 @@ public class ReportListActivity extends AppCompatActivity {
           // error... y?
           // error... y?
           //String responseBody = EntityUtils.toString(entity);
+
+          Header[] headers = httpResponse.getAllHeaders();
+          for (Header header : headers) {
+            Log.d("TEST", header.getValue());
+          }
 
           BufferedReader in = new BufferedReader(new InputStreamReader(entity.getContent()));
 
