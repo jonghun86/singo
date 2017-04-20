@@ -9,8 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -18,11 +18,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -32,8 +31,6 @@ public class ReportListActivity extends AppCompatActivity {
    * String to identity log message
    */
   private final String ID_REPORT_LIST_QUERY = "REPORT_LIST";
-
-  private String cookie;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +65,7 @@ public class ReportListActivity extends AppCompatActivity {
    * Represents an asynchronous login/registration task used to authenticate
    * the user.
    */
-  public class ReportListRequestTask extends AsyncTask<Void, Void, HttpResponse> {
+  public class ReportListRequestTask extends AsyncTask<Void, Void, String> {
     private String cookie;
 
     ReportListRequestTask(String cookie) {
@@ -86,14 +83,36 @@ public class ReportListActivity extends AppCompatActivity {
         HttpClient client = new DefaultHttpClient();
 
         ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+        param.add(new BasicNameValuePair("pageNo", "1"));
         param.add(new BasicNameValuePair("menuGubun", "1"));
-        param.add(new BasicNameValuePair("menu1", "1"));
+        param.add(new BasicNameValuePair("menu1", "pc"));
+        param.add(new BasicNameValuePair("jumin_no_c", ""));
+        param.add(new BasicNameValuePair("peter_name_v", ""));
+        param.add(new BasicNameValuePair("open_yn_c", ""));
+
+
         param.add(new BasicNameValuePair("memYn", "Y"));
         param.add(new BasicNameValuePair("mypetiViewEncFlag", "N"));
+        param.add(new BasicNameValuePair("mypetiViewEncFlag", "N"));
+        param.add(new BasicNameValuePair("srchBoxDetailShowYN", "N"));
         param.add(new BasicNameValuePair("menuCode", "PC"));
+        param.add(new BasicNameValuePair("q_status_c", ""));
+        param.add(new BasicNameValuePair("reply_confirm_yn", ""));
+        param.add(new BasicNameValuePair("satisfy_yn", ""));
+        param.add(new BasicNameValuePair("dateoranc_order_by", ""));
+        param.add(new BasicNameValuePair("q_reg_d1", "2016-04-20"));
+        param.add(new BasicNameValuePair("q_reg_d2", "2017-04-20"));
+        param.add(new BasicNameValuePair("q_search_type", ""));
+        param.add(new BasicNameValuePair("keyword", ""));
+
+
+
         String parameter = URLEncodedUtils.format(param, "UTF-8");
         HttpGet httpGet = new HttpGet(String.valueOf(url) + "?" + parameter);
-        httpGet.setHeader("cookie", cookie);
+        httpGet.setHeader(new BasicHeader("Authorization: Token", cookie));
+        //httpGet.addHeader("Cookie", " PHPSESSID="+PHPSESSID+"; gc_userid="+gc_user+"; gc_session="+gc);
+
+
         responseGet = client.execute(httpGet);
       } catch(Exception e){
         e.printStackTrace();
@@ -103,72 +122,36 @@ public class ReportListActivity extends AppCompatActivity {
     }
 
     @Override
-    protected HttpResponse doInBackground(Void... not_used) {
-      return requestReportList();
+    protected String doInBackground(Void... not_used) {
+      HttpResponse httpResponse = requestReportList();
+      final HttpEntity entity = httpResponse.getEntity();
+      String responseBody = null;
+      if (entity == null) {
+        Log.w(ID_REPORT_LIST_QUERY, "Entity error");
+        // TODO
+        // Add error handling code
+      }
+      else {
+
+        try {
+          responseBody = EntityUtils.toString(entity);
+        }
+        catch (Exception e) {
+          Log.d(ID_REPORT_LIST_QUERY, e.toString());
+          e.printStackTrace();
+        }
+      }
+      return responseBody;
     }
 
     @Override
-    protected void onPostExecute(final HttpResponse httpResponse) {
-      try {
-        final HttpEntity entity = httpResponse.getEntity();
-        if (entity == null) {
-          Log.w(ID_REPORT_LIST_QUERY, "Entity error");
-          // TODO
-          // Add error handling code
-        }
-        else {
-          int status = httpResponse.getStatusLine().getStatusCode();
-          // error... y?
-          // error... y?
-          // error... y?
-          // error... y?
-          //String responseBody = EntityUtils.toString(entity);
+    protected void onPostExecute(final String responseBody) {
 
-          Header[] headers = httpResponse.getAllHeaders();
-          for (Header header : headers) {
-            Log.d("TEST", header.getValue());
-          }
+      WebView web = (WebView)findViewById(R.id.test_web_view);
+      web.getSettings().setJavaScriptEnabled(true);
+      web.getSettings().setDefaultTextEncodingName("UTF-8");
 
-          BufferedReader in = new BufferedReader(new InputStreamReader(entity.getContent()));
-
-          String test;
-          try {
-
-            // error... y?
-            // error... y?
-            // error... y?
-            // error... y?
-            while ((test = in.readLine()) != null) {
-              Log.d(ID_REPORT_LIST_QUERY, test);
-            }
-          }
-          catch (IOException e) {
-            e.printStackTrace();
-          }
-
-
-
-
-          // TODO
-          // add error handling code when login process is failed,
-
-
-
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-      //EntityUtils.getContentCharSet(entity);
-
-      /*
-      if (success) {
-        finish();
-      } else {
-        mPasswordView.setError(getString(R.string.error_incorrect_password));
-        mPasswordView.requestFocus();
-      }
-      */
+      web.loadDataWithBaseURL("useless", responseBody, "text/html", "UTF-8", null);
     }
 
     @Override

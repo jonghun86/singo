@@ -14,4 +14,12 @@
     tools:context="com.ky.singo.ReportListActivity"
     tools:showIn="@layout/activity_report_list">
 
+    <WebView
+        android:id="@+id/test_web_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="19dp"/>
 </RelativeLayout>
