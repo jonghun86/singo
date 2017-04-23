@@ -18,7 +18,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
@@ -109,8 +108,15 @@ public class ReportListActivity extends AppCompatActivity {
 
         String parameter = URLEncodedUtils.format(param, "UTF-8");
         HttpGet httpGet = new HttpGet(String.valueOf(url) + "?" + parameter);
-        httpGet.setHeader(new BasicHeader("Authorization: Token", cookie));
+        //httpGet.setHeader(new BasicHeader("JSESSIONID", cookie));
+        httpGet.setHeader("Cookie", cookie);
+
+
         //httpGet.addHeader("Cookie", " PHPSESSID="+PHPSESSID+"; gc_userid="+gc_user+"; gc_session="+gc);
+
+
+
+
 
 
         responseGet = client.execute(httpGet);

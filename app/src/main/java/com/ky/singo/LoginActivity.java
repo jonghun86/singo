@@ -36,6 +36,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -305,6 +306,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
    */
   public class UserLoginTask extends AsyncTask<Void, Void, HttpResponse> {
 
+    List<Cookie> cookies2;
     private final String mEmail;
     private final String mPassword;
     UserLoginTask(String email, String password) {
@@ -335,6 +337,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         httpPost.setEntity(new UrlEncodedFormEntity(param));
         responsePost = httpClient.execute(httpPost);
+
+        List<Cookie> cookies2 = ((DefaultHttpClient)httpClient).getCookieStore().getCookies();
+        if (cookies2.isEmpty()) {
+          Log.e(ID_USER_LOGIN, "empty cookies");
+        } else {
+          for (int i = 0; i < cookies2.size(); i++) {
+            Log.e(ID_USER_LOGIN, "------- " + cookies2.get(i).toString());
+          }
+        }
+
 
       } catch (Exception e) {
         // TODO Auto-generated catch block
@@ -369,34 +381,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             throw new Exception();
           }
 
+
           // sends a cookie to ReportListActivity
           Log.d(ID_USER_LOGIN, headers[0].toString());
+          Log.d(ID_USER_LOGIN, headers[0].getName());
+          Log.d(ID_USER_LOGIN, headers[0].getValue());
           Intent intent = new Intent(LoginActivity.this, ReportListActivity.class);
-          intent.putExtra("cookie", headers[0].toString());
+          intent.putExtra("cookie", headers[0].getValue());
           startActivity(intent);
         }
         else  {
           Log.e(ID_USER_LOGIN, "invalid response (status: " + statusCode + " != 200)");
           throw new Exception();
         }
-
-
-
-
-
-            //String responseBody = EntityUtils.toString(entity);
-          //Log.d(ID_USER_LOGIN, responseBody.toString());
-
-
-          //Header[] mCookies = httpResponse.getHeaders("cookie");
-
-          // TODO
-          // add error handling code when login process is failed,
-
-          // move to ReportListActivity when login process is successfully done.
-          //Intent intent = new Intent(LoginActivity.this, ReportListActivity.class);
-          //startActivity(intent);
-
 
       } catch (Exception e) {
         e.printStackTrace();
