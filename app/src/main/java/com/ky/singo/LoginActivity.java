@@ -18,7 +18,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,16 +27,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
@@ -304,9 +296,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
    * Represents an asynchronous login/registration task used to authenticate
    * the user.
    */
-  public class UserLoginTask extends AsyncTask<Void, Void, HttpResponse> {
+  public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-    List<Cookie> cookies2;
     private final String mEmail;
     private final String mPassword;
     UserLoginTask(String email, String password) {
@@ -314,101 +305,37 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
       mPassword = password;
     }
 
-    // TODO : parameterize
-    // Return
-    //  - true   : if login request is transmitted to the server
-    //  - false  : else
-    private HttpResponse requestLogin() {
+    @Override
+    protected Boolean doInBackground(Void... not_used) {
       final String url = "https://www.epeople.go.kr/ULogin.do";
+      //final String url = "https://m.epeople.go.kr/common/ULoginIdPWd.do";
       ArrayList<NameValuePair> param;
-      UrlEncodedFormEntity entity;
-      HttpResponse responsePost;
+      PostTransaction postTransaction;
 
-      try {
-        // create HTTP header
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(url);
+      // parameter
+      param = new ArrayList<NameValuePair>();
+      param.add(new BasicNameValuePair("memId", mEmail));
+      param.add(new BasicNameValuePair("memPw", mPassword));
+      param.add(new BasicNameValuePair("execmode", "Y"));
+      param.add(new BasicNameValuePair("isPeti", "N"));
 
-        param = new ArrayList<NameValuePair>();
-        param.add(new BasicNameValuePair("memId", mEmail));
-        param.add(new BasicNameValuePair("memPw", mPassword));
-        param.add(new BasicNameValuePair("execmode", "Y"));
-        param.add(new BasicNameValuePair("isPeti", "N"));
-
-        httpPost.setEntity(new UrlEncodedFormEntity(param));
-        responsePost = httpClient.execute(httpPost);
-
-        List<Cookie> cookies2 = ((DefaultHttpClient)httpClient).getCookieStore().getCookies();
-        if (cookies2.isEmpty()) {
-          Log.e(ID_USER_LOGIN, "empty cookies");
-        } else {
-          for (int i = 0; i < cookies2.size(); i++) {
-            Log.e(ID_USER_LOGIN, "------- " + cookies2.get(i).toString());
-          }
-        }
-
-
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        return null;
-      }
-
-
-      return responsePost;
+      // send a packet
+      postTransaction = new PostTransaction(url);
+      return postTransaction.send(param);
     }
 
     @Override
-    protected HttpResponse doInBackground(Void... not_used) {
-      return requestLogin();
-    }
-
-    @Override
-    protected void onPostExecute(final HttpResponse httpResponse) {
+    protected void onPostExecute(final Boolean isSuccess) {
       mAuthTask = null;
       showProgress(false);
 
-
-      try {
-        int statusCode = httpResponse.getStatusLine().getStatusCode();
-        // (JH)
-        // This below code does not guarantee that login process is successfully done.
-        if (statusCode == HttpStatus.SC_OK) {
-          Header[] headers = httpResponse.getHeaders("Set-Cookie");
-
-          // error because multiple headers (that includes cookie) are transmitted.
-          if (headers.length > 1) {
-            Log.e(ID_USER_LOGIN, "multiple cookie headers are transmitted");
-            throw new Exception();
-          }
-
-
-          // sends a cookie to ReportListActivity
-          Log.d(ID_USER_LOGIN, headers[0].toString());
-          Log.d(ID_USER_LOGIN, headers[0].getName());
-          Log.d(ID_USER_LOGIN, headers[0].getValue());
-          Intent intent = new Intent(LoginActivity.this, ReportListActivity.class);
-          intent.putExtra("cookie", headers[0].getValue());
-          startActivity(intent);
-        }
-        else  {
-          Log.e(ID_USER_LOGIN, "invalid response (status: " + statusCode + " != 200)");
-          throw new Exception();
-        }
-
-      } catch (Exception e) {
-        e.printStackTrace();
+      if (isSuccess == true) {
+        Intent intent = new Intent(LoginActivity.this, ReportListActivity.class);
+        startActivity(intent);
       }
-
-      //EntityUtils.getContentCharSet(entity);
-
-      /*
-      if (success) {
-        finish();
-      } else {
-        mPasswordView.setError(getString(R.string.error_incorrect_password));
-        mPasswordView.requestFocus();
+      else {
+        Toast.makeText(getApplicationContext(), "Unknown error", Toast.LENGTH_SHORT);
       }
-      */
     }
 
     @Override

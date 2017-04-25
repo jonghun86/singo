@@ -109,7 +109,7 @@ public class ReportListActivity extends AppCompatActivity {
         String parameter = URLEncodedUtils.format(param, "UTF-8");
         HttpGet httpGet = new HttpGet(String.valueOf(url) + "?" + parameter);
         //httpGet.setHeader(new BasicHeader("JSESSIONID", cookie));
-        httpGet.setHeader("Cookie", cookie);
+        httpGet.setHeader("Cookie", Cookie.getInstance().getKey());
 
 
         //httpGet.addHeader("Cookie", " PHPSESSID="+PHPSESSID+"; gc_userid="+gc_user+"; gc_session="+gc);
@@ -129,6 +129,53 @@ public class ReportListActivity extends AppCompatActivity {
 
     @Override
     protected String doInBackground(Void... not_used) {
+      final String url = "https://www.epeople.go.kr/jsp/user/on/mypage/cvreq/UPcMyCvreqList.jsp";
+      //final String url = "https://m.epeople.go.kr//mypage/cvpl/cvpl_list.do";
+      Boolean isSuccess;
+      PostTransaction postTransaction;
+      ArrayList<NameValuePair> param;
+
+      // parameter
+      param = new ArrayList<NameValuePair>();
+      param.add(new BasicNameValuePair("pageNo", "1"));
+      param.add(new BasicNameValuePair("mode", "getMyCvreqList"));
+      param.add(new BasicNameValuePair("menuGubun", "1"));
+      param.add(new BasicNameValuePair("menu1", "mobile"));
+      param.add(new BasicNameValuePair("memYn", "Y"));
+      param.add(new BasicNameValuePair("mypetiViewEncFlag", "N"));
+      param.add(new BasicNameValuePair("srchBoxDetailShowYN", "N"));
+      param.add(new BasicNameValuePair("menuCode", "PC"));
+      param.add(new BasicNameValuePair("q_reg_d1", "2016-04-20"));
+      param.add(new BasicNameValuePair("q_reg_d2", "2017-04-20"));
+      param.add(new BasicNameValuePair("q_search_type", "q_search_no_c"));
+      param.add(new BasicNameValuePair("dateoranc_order_by", "1"));
+      param.add(new BasicNameValuePair("pagingCnt", "50"));
+      /*
+      for mobile
+      param.add(new BasicNameValuePair("nowPage", "1"));
+      param.add(new BasicNameValuePair("fromDate", "2016-04-20"));
+      param.add(new BasicNameValuePair("toDate", "2017-04-20"));
+      param.add(new BasicNameValuePair("searchKind", "txtSearch2"));
+      */
+
+      // send a packet
+      postTransaction = new PostTransaction(url);
+      isSuccess = postTransaction.send(param);
+      if (isSuccess) {
+        final HttpEntity entity = postTransaction.getResponse().getEntity();
+        try {
+          return EntityUtils.toString(entity);
+        }
+        catch (Exception e) {
+          Log.d(ID_REPORT_LIST_QUERY, e.toString());
+          e.printStackTrace();
+        }
+      }
+
+      return null;
+
+            /*
+
       HttpResponse httpResponse = requestReportList();
       final HttpEntity entity = httpResponse.getEntity();
       String responseBody = null;
@@ -148,6 +195,7 @@ public class ReportListActivity extends AppCompatActivity {
         }
       }
       return responseBody;
+      */
     }
 
     @Override
@@ -156,8 +204,8 @@ public class ReportListActivity extends AppCompatActivity {
       WebView web = (WebView)findViewById(R.id.test_web_view);
       web.getSettings().setJavaScriptEnabled(true);
       web.getSettings().setDefaultTextEncodingName("UTF-8");
-
       web.loadDataWithBaseURL("useless", responseBody, "text/html", "UTF-8", null);
+      Log.d("@@", responseBody);
     }
 
     @Override
