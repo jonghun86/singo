@@ -1,6 +1,5 @@
 package com.ky.singo;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,16 +11,14 @@ import android.view.View;
 import android.webkit.WebView;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-import java.net.URL;
 import java.util.ArrayList;
 
 public class ReportListActivity extends AppCompatActivity {
@@ -48,9 +45,7 @@ public class ReportListActivity extends AppCompatActivity {
     });
 
     try {
-      Intent intent = getIntent();
-      String cookie = intent.getStringExtra("cookie");
-      new ReportListRequestTask(cookie).execute();
+      new ReportListRequestTask().execute();
     } catch(Exception e) {
       e.printStackTrace();
     }
@@ -65,66 +60,9 @@ public class ReportListActivity extends AppCompatActivity {
    * the user.
    */
   public class ReportListRequestTask extends AsyncTask<Void, Void, String> {
-    private String cookie;
 
-    ReportListRequestTask(String cookie) {
-      this.cookie = cookie;
-    }
+    ReportListRequestTask() {
 
-    // TODO : parameterize
-    // Return
-    //  - true   : if login request is transmitted to the server
-    //  - false  : else
-    private HttpResponse requestReportList() {
-      HttpResponse responseGet;
-      try {
-        URL url = new URL("https://www.epeople.go.kr/jsp/user/on/mypage/cvreq/UPcMyCvreqList.jsp");
-        HttpClient client = new DefaultHttpClient();
-
-        ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
-        param.add(new BasicNameValuePair("pageNo", "1"));
-        param.add(new BasicNameValuePair("menuGubun", "1"));
-        param.add(new BasicNameValuePair("menu1", "pc"));
-        param.add(new BasicNameValuePair("jumin_no_c", ""));
-        param.add(new BasicNameValuePair("peter_name_v", ""));
-        param.add(new BasicNameValuePair("open_yn_c", ""));
-
-
-        param.add(new BasicNameValuePair("memYn", "Y"));
-        param.add(new BasicNameValuePair("mypetiViewEncFlag", "N"));
-        param.add(new BasicNameValuePair("mypetiViewEncFlag", "N"));
-        param.add(new BasicNameValuePair("srchBoxDetailShowYN", "N"));
-        param.add(new BasicNameValuePair("menuCode", "PC"));
-        param.add(new BasicNameValuePair("q_status_c", ""));
-        param.add(new BasicNameValuePair("reply_confirm_yn", ""));
-        param.add(new BasicNameValuePair("satisfy_yn", ""));
-        param.add(new BasicNameValuePair("dateoranc_order_by", ""));
-        param.add(new BasicNameValuePair("q_reg_d1", "2016-04-20"));
-        param.add(new BasicNameValuePair("q_reg_d2", "2017-04-20"));
-        param.add(new BasicNameValuePair("q_search_type", ""));
-        param.add(new BasicNameValuePair("keyword", ""));
-
-
-
-        String parameter = URLEncodedUtils.format(param, "UTF-8");
-        HttpGet httpGet = new HttpGet(String.valueOf(url) + "?" + parameter);
-        //httpGet.setHeader(new BasicHeader("JSESSIONID", cookie));
-        httpGet.setHeader("Cookie", Cookie.getInstance().getKey());
-
-
-        //httpGet.addHeader("Cookie", " PHPSESSID="+PHPSESSID+"; gc_userid="+gc_user+"; gc_session="+gc);
-
-
-
-
-
-
-        responseGet = client.execute(httpGet);
-      } catch(Exception e){
-        e.printStackTrace();
-        return null;
-      }
-      return responseGet;
     }
 
     @Override
@@ -173,33 +111,19 @@ public class ReportListActivity extends AppCompatActivity {
       }
 
       return null;
-
-            /*
-
-      HttpResponse httpResponse = requestReportList();
-      final HttpEntity entity = httpResponse.getEntity();
-      String responseBody = null;
-      if (entity == null) {
-        Log.w(ID_REPORT_LIST_QUERY, "Entity error");
-        // TODO
-        // Add error handling code
-      }
-      else {
-
-        try {
-          responseBody = EntityUtils.toString(entity);
-        }
-        catch (Exception e) {
-          Log.d(ID_REPORT_LIST_QUERY, e.toString());
-          e.printStackTrace();
-        }
-      }
-      return responseBody;
-      */
     }
 
     @Override
     protected void onPostExecute(final String responseBody) {
+
+      Document doc = Jsoup.parse(responseBody);
+      Elements title = doc.select("tbody");
+
+      for (Element e : title) {
+        Log.d("##", e.text());
+      }
+
+
 
       WebView web = (WebView)findViewById(R.id.test_web_view);
       web.getSettings().setJavaScriptEnabled(true);
