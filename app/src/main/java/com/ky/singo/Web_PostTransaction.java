@@ -17,19 +17,19 @@ import java.util.ArrayList;
  * Created by mmyjh on 2017-04-25.
  */
 
-public class PostTransaction {
+public class Web_PostTransaction {
   private HttpPost httpPost;
   private HttpResponse response;
   private final String TRANSACTION = "POST-TRANSACTION";
 
   // constructor
-  public PostTransaction (String url) {
+  public Web_PostTransaction(String url) {
     httpPost = new HttpPost(url);
   }
 
   public boolean send(ArrayList<NameValuePair> param) {
     int status;
-    Cookie cookie = Cookie.getInstance();
+    Web_Cookie  cookie = Web_Cookie .getInstance();
 
     try {
       // Send a packet

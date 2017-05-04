@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#00796B"
-    tools:context="com.ky.singo.ReportListActivity">
+    tools:context="com.ky.singo.ReportList_Activity">
 
     <!-- TOP Tile Section -->
     <LinearLayout
@@ -29,10 +29,10 @@
         android:background="#ffffff"
         android:layout_weight="1"
         >
-        <com.ky.singo.ReportContentView
+        <com.ky.singo.ReportList_Content_View
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-        </com.ky.singo.ReportContentView>
+        </com.ky.singo.ReportList_Content_View>
         <!--TextView
             android:text="제목"
             style="@style/ReportActTable.Title"/>

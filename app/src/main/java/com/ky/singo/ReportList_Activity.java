@@ -16,7 +16,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 
-public class ReportListActivity extends AppCompatActivity {
+public class ReportList_Activity extends AppCompatActivity {
 
   /**
    * String to identity log message
@@ -27,7 +27,7 @@ public class ReportListActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     Log.d(ID_REPORT_LIST_QUERY, "onCreate");
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_report_list);
+    setContentView(R.layout.reportlist_activity);
 
     try {
       //new ReportListRequestTask().execute();
@@ -51,7 +51,7 @@ public class ReportListActivity extends AppCompatActivity {
       final String url = "https://www.epeople.go.kr/jsp/user/on/mypage/cvreq/UPcMyCvreqList.jsp";
       //final String url = "https://m.epeople.go.kr//mypage/cvpl/cvpl_list.do";
       Boolean isSuccess;
-      PostTransaction postTransaction;
+      Web_PostTransaction postTransaction;
       ArrayList<NameValuePair> param;
 
       // parameter
@@ -78,7 +78,7 @@ public class ReportListActivity extends AppCompatActivity {
       */
 
       // send a packet
-      postTransaction = new PostTransaction(url);
+      postTransaction = new Web_PostTransaction(url);
       isSuccess = postTransaction.send(param);
       if (isSuccess) {
         final HttpEntity entity = postTransaction.getResponse().getEntity();

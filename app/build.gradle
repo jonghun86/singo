@@ -25,15 +25,7 @@ android {
         exclude 'META-INF/license'
         exclude 'META-INF/license.txt'
     }
-    /*
-    sourceSets {
-        main {
-            res.srcDirs = [
-                    'src/main/res/layouts',
-                    'src/main/res/values']
-        }
-    }
-    */
+
     useLibrary 'org.apache.http.legacy'
 }
 
