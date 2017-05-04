@@ -8,7 +8,7 @@
     android:background="#00796B"
     tools:context="com.ky.singo.ReportListActivity">
 
-
+    <!-- TOP Tile Section -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="45dp"
@@ -21,43 +21,35 @@
             style="@style/Title"/>
     </LinearLayout>
 
-    <TableLayout
+    <!-- Middle Contents Section -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:background="#ffffff"
         android:layout_weight="1"
         >
-        <TableRow>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <TextView
-                    android:text="제목"
-                    style="@style/ReportActTable.Title"/>
-                <TextView
-                    android:text="신청일"
-                    style="@style/ReportActTable.Detail"/>
-                <TextView
-                    android:text="추진상황"
-                    style="@style/ReportActTable.Detail"/>
+        <com.ky.singo.ReportContentView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </com.ky.singo.ReportContentView>
+        <!--TextView
+            android:text="제목"
+            style="@style/ReportActTable.Title"/>
+        <TextView
+            android:text="신청일"
+            style="@style/ReportActTable.Detail"/>
+        <TextView
+            android:text="추진상황"
+            style="@style/ReportActTable.Detail"/>
 
-                <TextView
-                    android:text="만족도"
-                    style="@style/ReportActTable.Detail"/>
-            </LinearLayout>
+        <TextView
+            android:text="만족도"
+            style="@style/ReportActTable.Detail"/-->
 
-        </TableRow>
-        <TableRow>
+    </LinearLayout>
 
-        </TableRow>
-        <TableRow>
-
-        </TableRow>
-        <TableRow>
-
-        </TableRow>
-    </TableLayout>
+    <!-- Bottom Margin -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
