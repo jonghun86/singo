@@ -5,13 +5,19 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 /**
  * Created by mmyjh on 2017-05-04.
  */
 
 public class ReportList_Content_View extends LinearLayout {
+  TextView complaintTitle;
+  TextView requestDate;
+  TextView processState;
+  ImageView processIcon;
 
   public ReportList_Content_View(Context context) {
     super(context);
@@ -35,12 +41,11 @@ public class ReportList_Content_View extends LinearLayout {
     LayoutInflater li = (LayoutInflater) getContext().getSystemService(infService);
     View v = li.inflate(R.layout.reportlist_content_view, this, false);
     addView(v);
-     /*
-    bg = (LinearLayout) findViewById(R.id.bg);
-    symbol = (ImageView) findViewById(R.id.symbol);
 
-    text = (TextView) findViewById(R.id.text);
-    */
+    complaintTitle = (TextView) findViewById(R.id.complaintTitle);
+    requestDate = (TextView) findViewById(R.id.requestDate);
+    processState = (TextView) findViewById(R.id.processState);
+    processIcon = (ImageView) findViewById(R.id.processIcon);
   }
 
   private void getAttrs(AttributeSet attrs) {
@@ -56,21 +61,21 @@ public class ReportList_Content_View extends LinearLayout {
   }
 
   private void setTypeArray(TypedArray typedArray) {
-    /*
-    int bg_resID = typedArray.getResourceId(R.styleable.LoginButton_bg, R.drawable.login_naver_bg);
-    bg.setBackgroundResource(bg_resID);
+    String string;
 
-    int symbol_resID = typedArray.getResourceId(R.styleable.LoginButton_symbol, R.drawable.login_naver_symbol);
-    symbol.setImageResource(symbol_resID);
+    string = typedArray.getString(R.styleable.ReportContent_complaintTitle);
+    complaintTitle.setText(string);
 
-    int textColor = typedArray.getColor(R.styleable.LoginButton_textColor, 0);
-    text.setTextColor(textColor);
+    string = typedArray.getString(R.styleable.ReportContent_requestDate);
+    requestDate.setText(string);
 
-    String text_string = typedArray.getString(R.styleable.LoginButton_text);
-    text.setText(text_string);
-
-
+    string = typedArray.getString(R.styleable.ReportContent_processState);
+    processState.setText(string);
     typedArray.recycle();
+    /*
+    int bg_resID = typedArray.getResourceId(R.styleable.ReportContent_processIcon,
+      R.drawable.login_naver_bg);
+    bg.setBackgroundResource(bg_resID);
      */
   }
 }

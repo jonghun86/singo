@@ -5,9 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
     <TextView
+        android:id="@+id/complaintTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Title"/>
+        android:background="#00665a"
+        android:textColor="#aaaaaa"
+        android:textSize="17sp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,26 +18,25 @@
         <LinearLayout
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_weight="1">
             <TextView
+                android:id="@+id/requestDate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#ff0000"
-                android:text="1"/>
+                android:background="#00b39e"
+                android:textSize="15sp"/>
             <TextView
+                android:id="@+id/processState"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#00ff00"
-                android:text="2"/>
+                android:background="#00b39e"
+                android:textSize="15sp"/>
         </LinearLayout>
-        <LinearLayout
+        <ImageView
+            android:id="@+id/processIcon"
             android:layout_width="100dp"
-            android:layout_height="match_parent">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#0000ff"
-                android:text="3"/>
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:background="#0000ff"/>
     </LinearLayout>
 </LinearLayout>

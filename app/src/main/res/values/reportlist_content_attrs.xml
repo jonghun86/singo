@@ -1,8 +1,8 @@
 <resources>
     <declare-styleable name="ReportContent">
-        <attr name="bg" format="reference|integer" />
-        <attr name="symbol" format="reference|integer" />
-        <attr name="text" format="reference|string" />
-        <attr name="textColor" format="reference|integer" />
+        <attr name="complaintTitle"  format="reference|string"/>
+        <attr name="requestDate"    format="reference|string"/>
+        <attr name="processState"   format="reference|string"/>
+        <attr name="processIcon"    format="reference"/>
     </declare-styleable>
 </resources>
