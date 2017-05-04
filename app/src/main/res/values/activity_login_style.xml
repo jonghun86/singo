@@ -20,12 +20,4 @@
         <item name="android:textColor">#ffffff</item>
         <item name="android:gravity">center</item>
     </style>
-
-    <style name="LoginActDisplaySection.tt">
-        <item name="android:textSize">30sp</item>
-        <item name="android:textColor">#ffffff</item>
-        <item name="android:gravity">left</item>
-        <item name="android:layout_marginLeft">30dp</item>
-    </style>
-
 </resources>

@@ -1,35 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:background="#00796B"
     tools:context="com.ky.singo.ReportListActivity">
 
-    <android.support.design.widget.AppBarLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        android:layout_height="45dp"
+        android:orientation="vertical"
+        android:layout_marginBottom="15dp">
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            android:layout_height="match_parent"
+            android:text="신고내역"
+            style="@style/Title"/>
+    </LinearLayout>
 
-    </android.support.design.widget.AppBarLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:layout_weight="1"
+        >
+        <TableRow>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:text="제목"
+                    style="@style/ReportActTable.Title"/>
+                <TextView
+                    android:text="신청일"
+                    style="@style/ReportActTable.Detail"/>
+                <TextView
+                    android:text="추진상황"
+                    style="@style/ReportActTable.Detail"/>
 
-    <include layout="@layout/content_report_list"/>
+                <TextView
+                    android:text="만족도"
+                    style="@style/ReportActTable.Detail"/>
+            </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email"/>
+        </TableRow>
+        <TableRow>
 
-</android.support.design.widget.CoordinatorLayout>
+        </TableRow>
+        <TableRow>
+
+        </TableRow>
+        <TableRow>
+
+        </TableRow>
+    </TableLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#00ff00">
+    </LinearLayout>
+
+
+
+    <!--WebView
+        android:id="@+id/test_web_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="19dp"/-->
+</LinearLayout>

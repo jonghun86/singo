@@ -2,13 +2,8 @@ package com.ky.singo;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.webkit.WebView;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -30,30 +25,16 @@ public class ReportListActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    Log.d(ID_REPORT_LIST_QUERY, "onCreate");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_report_list);
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
-
-    FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-    fab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-          .setAction("Action", null).show();
-      }
-    });
 
     try {
-      new ReportListRequestTask().execute();
+      //new ReportListRequestTask().execute();
     } catch(Exception e) {
       e.printStackTrace();
     }
   }
-
-
-
-
 
   /**
    * Represents an asynchronous login/registration task used to authenticate
@@ -109,7 +90,6 @@ public class ReportListActivity extends AppCompatActivity {
           e.printStackTrace();
         }
       }
-
       return null;
     }
 
@@ -124,12 +104,13 @@ public class ReportListActivity extends AppCompatActivity {
       }
 
 
-
+         /*
       WebView web = (WebView)findViewById(R.id.test_web_view);
       web.getSettings().setJavaScriptEnabled(true);
       web.getSettings().setDefaultTextEncodingName("UTF-8");
       web.loadDataWithBaseURL("useless", responseBody, "text/html", "UTF-8", null);
       Log.d("@@", responseBody);
+      */
     }
 
     @Override
