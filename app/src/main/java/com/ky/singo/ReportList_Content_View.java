@@ -49,7 +49,6 @@ public class ReportList_Content_View extends LinearLayout {
     setTypeArray(typedArray);
   }
 
-
   private void getAttrs(AttributeSet attrs, int defStyle) {
     TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.ReportContent,
       defStyle, 0);
