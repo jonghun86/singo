@@ -16,6 +16,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class ReportList_Activity extends AppCompatActivity {
 
@@ -29,12 +30,8 @@ public class ReportList_Activity extends AppCompatActivity {
     Log.d(ID_REPORT_LIST_QUERY, "onCreate");
     super.onCreate(savedInstanceState);
     setContentView(R.layout.reportlist_activity);
-
     try {
-      LinearLayout contentRoot = (LinearLayout) findViewById(R.id.email_login_form);
-
-
-      //new ReportListRequestTask().execute();
+      new ReportListRequestTask().execute();
     } catch(Exception e) {
       e.printStackTrace();
     }
@@ -53,7 +50,6 @@ public class ReportList_Activity extends AppCompatActivity {
     @Override
     protected String doInBackground(Void... not_used) {
       final String url = "https://www.epeople.go.kr/jsp/user/on/mypage/cvreq/UPcMyCvreqList.jsp";
-      //final String url = "https://m.epeople.go.kr//mypage/cvpl/cvpl_list.do";
       Boolean isSuccess;
       Web_PostTransaction postTransaction;
       ArrayList<NameValuePair> param;
@@ -73,13 +69,6 @@ public class ReportList_Activity extends AppCompatActivity {
       param.add(new BasicNameValuePair("q_search_type", "q_search_no_c"));
       param.add(new BasicNameValuePair("dateoranc_order_by", "1"));
       param.add(new BasicNameValuePair("pagingCnt", "50"));
-      /*
-      for mobile
-      param.add(new BasicNameValuePair("nowPage", "1"));
-      param.add(new BasicNameValuePair("fromDate", "2016-04-20"));
-      param.add(new BasicNameValuePair("toDate", "2017-04-20"));
-      param.add(new BasicNameValuePair("searchKind", "txtSearch2"));
-      */
 
       // send a packet
       postTransaction = new Web_PostTransaction(url);
@@ -99,22 +88,42 @@ public class ReportList_Activity extends AppCompatActivity {
 
     @Override
     protected void onPostExecute(final String responseBody) {
-
+      Iterator<Element> iterator;
+      Element element;
+      LinearLayout contentRoot = (LinearLayout) findViewById(R.id.reportlist_content_root);
+      ReportList_Content_View view;
       Document doc = Jsoup.parse(responseBody);
-      Elements title = doc.select("td");
+      Elements reportListTable = doc.select("td");
+      iterator = reportListTable.iterator();
+      String complaintTitle;
+      String complaintSubInfo;
 
-      for (Element e : title) {
-        Log.d("##", e.text());
+      while (iterator.hasNext()) {
+        // Number
+        element = (Element) iterator.next();
+        Log.d("##",  element.text());
+        // Empty
+        iterator.next();
+        // Title
+        element = (Element) iterator.next();
+        complaintTitle = element.text();
+        // Division
+        iterator.next();
+        // Date
+        element = (Element) iterator.next();
+        complaintSubInfo = element.text();
+        // request State
+        element = (Element) iterator.next();
+        complaintSubInfo += " (";
+        complaintSubInfo += element.text();
+        complaintSubInfo += ")";
+        // Satisfaction State
+        iterator.next();
+
+        view = new ReportList_Content_View(getApplicationContext());
+        view.setContents(complaintTitle, complaintSubInfo);
+        contentRoot.addView(view);
       }
-
-
-         /*
-      WebView web = (WebView)findViewById(R.id.test_web_view);
-      web.getSettings().setJavaScriptEnabled(true);
-      web.getSettings().setDefaultTextEncodingName("UTF-8");
-      web.loadDataWithBaseURL("useless", responseBody, "text/html", "UTF-8", null);
-      Log.d("@@", responseBody);
-      */
     }
 
     @Override

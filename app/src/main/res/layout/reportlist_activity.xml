@@ -10,54 +10,25 @@
     <!-- TOP Tile Section -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         >
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#00796B"
+            android:layout_height="45dp"
             android:text="신고내역"
-            style="@style/Title"/>
+            style="@style/MainTitle"/>
     </LinearLayout>
 
     <!-- Middle Contents Section -->
     <LinearLayout
+        android:id="@+id/reportlist_content_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="5dp"
         android:orientation="vertical"
         android:layout_weight="1"
         >
-        <!--android:background="#ffffff"-->
-        <com.ky.singo.ReportList_Content_View
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
-        </com.ky.singo.ReportList_Content_View>
-
-        <com.ky.singo.ReportList_Content_View
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </com.ky.singo.ReportList_Content_View>
-
-        <com.ky.singo.ReportList_Content_View
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </com.ky.singo.ReportList_Content_View>
-        <!--TextView
-            android:text="제목"
-            style="@style/ReportActTable.Title"/>
-        <TextView
-            android:text="신청일"
-            style="@style/ReportActTable.Detail"/>
-        <TextView
-            android:text="추진상황"
-            style="@style/ReportActTable.Detail"/>
-
-        <TextView
-            android:text="만족도"
-            style="@style/ReportActTable.Detail"/-->
-
     </LinearLayout>
 
     <!-- Bottom Margin -->
@@ -66,15 +37,4 @@
         android:layout_height="200dp"
         android:background="#00ff00">
     </LinearLayout>
-
-
-
-    <!--WebView
-        android:id="@+id/test_web_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="19dp"/-->
 </LinearLayout>

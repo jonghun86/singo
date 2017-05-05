@@ -1,7 +1,8 @@
 <resources>
-    <style name="Title">
+    <style name="MainTitle">
         <item name="android:textSize">20sp</item>
         <item name="android:gravity">center_vertical</item>
+        <item name="android:background">#00796B</item>
         <item name="android:textColor">#ffffff</item>
     </style>
 

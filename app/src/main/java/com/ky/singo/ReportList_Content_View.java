@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,10 +14,8 @@ import android.widget.TextView;
  */
 
 public class ReportList_Content_View extends LinearLayout {
-  TextView complaintTitle;
-  TextView requestDate;
-  TextView processState;
-  ImageView processIcon;
+  TextView complaintTitleView;
+  TextView complaintSubInfoView;
 
   public ReportList_Content_View(Context context) {
     super(context);
@@ -42,10 +40,8 @@ public class ReportList_Content_View extends LinearLayout {
     View v = li.inflate(R.layout.reportlist_content_view, this, false);
     addView(v);
 
-    complaintTitle = (TextView) findViewById(R.id.complaintTitle);
-    requestDate = (TextView) findViewById(R.id.requestDate);
-    processState = (TextView) findViewById(R.id.processState);
-    processIcon = (ImageView) findViewById(R.id.processIcon);
+    complaintTitleView = (TextView) findViewById(R.id.complaintTitle);
+    complaintSubInfoView = (TextView) findViewById(R.id.complaintSubInfo);
   }
 
   private void getAttrs(AttributeSet attrs) {
@@ -62,20 +58,20 @@ public class ReportList_Content_View extends LinearLayout {
 
   private void setTypeArray(TypedArray typedArray) {
     String string;
-
     string = typedArray.getString(R.styleable.ReportContent_complaintTitle);
-    complaintTitle.setText(string);
-
-    string = typedArray.getString(R.styleable.ReportContent_requestDate);
-    requestDate.setText(string);
-
-    string = typedArray.getString(R.styleable.ReportContent_processState);
-    processState.setText(string);
+    complaintTitleView.setText(string);
+    string = typedArray.getString(R.styleable.ReportContent_complaintSubInfo);
+    complaintSubInfoView.setText(string);
     typedArray.recycle();
-    /*
-    int bg_resID = typedArray.getResourceId(R.styleable.ReportContent_processIcon,
-      R.drawable.login_naver_bg);
-    bg.setBackgroundResource(bg_resID);
-     */
+  }
+
+  public void setContents(String complaintTitle, String complaintSubInfo) {
+    complaintTitleView.setText(complaintTitle);
+    complaintSubInfoView.setText(complaintSubInfo);
+  }
+
+  @Override
+  public boolean onInterceptTouchEvent(MotionEvent ev) {
+    return super.onInterceptTouchEvent(ev);
   }
 }

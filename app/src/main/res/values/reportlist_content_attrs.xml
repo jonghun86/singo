@@ -1,8 +1,6 @@
 <resources>
     <declare-styleable name="ReportContent">
-        <attr name="complaintTitle"  format="reference|string"/>
-        <attr name="requestDate"    format="reference|string"/>
-        <attr name="processState"   format="reference|string"/>
-        <attr name="processIcon"    format="reference"/>
+        <attr name="complaintTitle"     format="reference|string"/>
+        <attr name="complaintSubInfo"   format="reference|string"/>
     </declare-styleable>
 </resources>
