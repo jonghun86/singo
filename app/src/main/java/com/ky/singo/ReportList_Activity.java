@@ -1,9 +1,12 @@
 package com.ky.singo;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import org.apache.http.HttpEntity;
@@ -19,17 +22,30 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ReportList_Activity extends AppCompatActivity {
-
-  /**
-   * String to identity log message
-   */
   private final String ID_REPORT_LIST_QUERY = "REPORT_LIST";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    Log.d(ID_REPORT_LIST_QUERY, "onCreate");
     super.onCreate(savedInstanceState);
+    Log.d(ID_REPORT_LIST_QUERY, "onCreate");
     setContentView(R.layout.reportlist_activity);
+
+    // Register button event
+    findViewById(R.id.reportWriteButton).setOnClickListener(
+      new Button.OnClickListener() {
+        public void onClick(View v) {
+          Intent intent = new Intent(ReportList_Activity.this, ReportWrite_Activity.class);
+          startActivity(intent);
+        }
+      }
+    );
+
+    try {
+      new ReportListRequestTask().execute();
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+/*
     try {
       LinearLayout contentRoot = (LinearLayout) findViewById(R.id.reportlist_content_root);
       ReportList_Content_View view;
@@ -46,10 +62,9 @@ public class ReportList_Activity extends AppCompatActivity {
       view.setContents("3. 이히리베디히이", "17-08-01 (완료)");
       contentRoot.addView(view);
 
-      //new ReportListRequestTask().execute();
     } catch(Exception e) {
       e.printStackTrace();
-    }
+    } */
   }
 
   /**
@@ -57,11 +72,6 @@ public class ReportList_Activity extends AppCompatActivity {
    * the user.
    */
   public class ReportListRequestTask extends AsyncTask<Void, Void, String> {
-
-    ReportListRequestTask() {
-
-    }
-
     @Override
     protected String doInBackground(Void... not_used) {
       final String url = "https://www.epeople.go.kr/jsp/user/on/mypage/cvreq/UPcMyCvreqList.jsp";
@@ -139,11 +149,6 @@ public class ReportList_Activity extends AppCompatActivity {
         view.setContents(complaintTitle, complaintSubInfo);
         contentRoot.addView(view);
       }
-    }
-
-    @Override
-    protected void onCancelled() {
-
     }
   }
 
