@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -30,6 +31,9 @@ public class ReportList_Activity extends AppCompatActivity {
     setContentView(R.layout.reportlist_activity);
 
     try {
+      LinearLayout contentRoot = (LinearLayout) findViewById(R.id.email_login_form);
+
+
       //new ReportListRequestTask().execute();
     } catch(Exception e) {
       e.printStackTrace();

@@ -4,13 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <TextView
-        android:id="@+id/complaintTitle"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#00665a"
-        android:textColor="#aaaaaa"
-        android:textSize="17sp"/>
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/complaintTitle"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:textColor="#aaaaaa"
+            android:textSize="17sp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/under_line" />
+    </LinearLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,13 +35,11 @@
                 android:id="@+id/requestDate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#00b39e"
                 android:textSize="15sp"/>
             <TextView
                 android:id="@+id/processState"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#00b39e"
                 android:textSize="15sp"/>
         </LinearLayout>
         <ImageView
