@@ -1,16 +1,12 @@
 package com.ky.singo;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -203,7 +199,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       // send a packet
       postTransaction = new Web_PostTransaction(url);
-      isSuccess = postTransaction.send(param);
+      isSuccess = postTransaction.sendTest(param, null);
       if (isSuccess) {
         final HttpEntity entity = postTransaction.getResponse().getEntity();
         try {
@@ -216,6 +212,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       return null;
     }
     protected void onPostExecute(final String responseBody) {
+      Log.d(ID_REPORT_WRITE_QUERY, "##################################");
       Log.d(ID_REPORT_WRITE_QUERY, responseBody);
     }
   }

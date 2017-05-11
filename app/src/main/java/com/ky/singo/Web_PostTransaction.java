@@ -29,7 +29,7 @@ public class Web_PostTransaction {
     httpPost = new HttpPost(url);
   }
 
-  public boolean send(ArrayList<NameValuePair> param, List<String> mediaPathList) {
+  public boolean sendTest(ArrayList<NameValuePair> param, List<String> mediaPathList) {
     int status;
     Web_Cookie  cookie = Web_Cookie .getInstance();
 
