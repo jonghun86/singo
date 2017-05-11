@@ -99,6 +99,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
    new ReportWriteTask().execute();
   }
 
+  /* TODO: should be sync */
   public class ReportWriteTask extends AsyncTask<Void, Void, String> {
     @Override
     protected String doInBackground(Void... not_used) {
@@ -214,6 +215,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
       }
       return null;
     }
+    protected void onPostExecute(final String responseBody) {
+      Log.d(ID_REPORT_WRITE_QUERY, responseBody);
+    }
   }
 
 
@@ -246,6 +250,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
         }
       }
       return null;
+    }
+    protected void onPostExecute(final String responseBody) {
+      Log.d(ID_REPORT_WRITE_QUERY, responseBody);
     }
   }
 }
