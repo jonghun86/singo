@@ -10,6 +10,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class Web_PostTransaction {
     httpPost = new HttpPost(url);
   }
 
-  public boolean sendTest(ArrayList<NameValuePair> param, List<String> mediaPathList) {
+  public boolean sendTest(ArrayList<NameValuePair> param, List<String> mediaPathList, byte [] bitMapData) {
     int status;
     Web_Cookie  cookie = Web_Cookie .getInstance();
 
@@ -43,6 +44,11 @@ public class Web_PostTransaction {
       //builder.addBinaryBody()
     }
 
+
+
+
+    ByteArrayBody bab = new ByteArrayBody(bitMapData, "sample_image.jpg");
+    builder.addPart("file1", bab);
     // Include text body
     for (NameValuePair nvp : param) {
       builder.addTextBody(nvp.getName(), nvp.getValue());
