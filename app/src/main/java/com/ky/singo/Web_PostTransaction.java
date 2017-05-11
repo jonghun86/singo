@@ -13,6 +13,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mmyjh on 2017-04-25.
@@ -28,8 +29,52 @@ public class Web_PostTransaction {
     httpPost = new HttpPost(url);
   }
 
-  public boolean sendMultiMedia() {
+  public boolean send(ArrayList<NameValuePair> param, List<String> mediaPathList) {
+    int status;
+    Web_Cookie  cookie = Web_Cookie .getInstance();
+
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
+    // Attach media files
+    for (String path : mediaPathList) {
+      // File #1
+      //builder.addBinaryBody()
+      // File #2
+      //builder.addBinaryBody()
+    }
+
+    // Include text body
+    for (NameValuePair nvp : param) {
+      builder.addTextBody(nvp.getName(), nvp.getValue());
+    }
+
+    try {
+      // Send a packet
+      HttpClient httpClient = new DefaultHttpClient();
+      httpPost.setEntity(builder.build());
+      httpPost.setHeader("Cookie", cookie.getKey());
+      response = httpClient.execute(httpPost);
+
+      // Receive a response packet
+      status = response.getStatusLine().getStatusCode();
+      if (status == HttpStatus.SC_OK) {
+        // Extract cookie info.
+        Header[] headers = response.getHeaders("Set-Cookie");
+        if (headers.length > 1) {
+          Log.d(TRANSACTION, "Multiple headers (" + headers.length + ") are received.");
+        }
+        else if (headers.length != 0) {
+          cookie.setKey(headers[0].getValue());
+          Log.d(TRANSACTION, "Cookie : " + cookie.getKey());
+        }
+      }
+      else {
+        Log.e(TRANSACTION, "Response error (status : " + status + ")");
+        throw new Exception();
+      }
+    } catch (Exception e) {
+      return false;
+    }
     return true;
   }
 
