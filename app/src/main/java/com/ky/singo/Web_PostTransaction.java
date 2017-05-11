@@ -9,6 +9,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.util.ArrayList;
@@ -25,6 +26,11 @@ public class Web_PostTransaction {
   // constructor
   public Web_PostTransaction(String url) {
     httpPost = new HttpPost(url);
+  }
+
+  public boolean sendMultiMedia() {
+    MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+    return true;
   }
 
   public boolean send(ArrayList<NameValuePair> param) {

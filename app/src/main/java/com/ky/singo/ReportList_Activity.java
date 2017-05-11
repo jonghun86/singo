@@ -45,26 +45,6 @@ public class ReportList_Activity extends AppCompatActivity {
     } catch(Exception e) {
       e.printStackTrace();
     }
-/*
-    try {
-      LinearLayout contentRoot = (LinearLayout) findViewById(R.id.reportlist_content_root);
-      ReportList_Content_View view;
-
-      view = new ReportList_Content_View(getApplicationContext());
-      view.setContents("1. 가나다라마바사", "17-04-01 (완료)");
-      contentRoot.addView(view);
-
-      view = new ReportList_Content_View(getApplicationContext());
-      view.setContents("2. 구누두루무부수", "17-03-01 (완료)");
-      contentRoot.addView(view);
-
-      view = new ReportList_Content_View(getApplicationContext());
-      view.setContents("3. 이히리베디히이", "17-08-01 (완료)");
-      contentRoot.addView(view);
-
-    } catch(Exception e) {
-      e.printStackTrace();
-    } */
   }
 
   /**
