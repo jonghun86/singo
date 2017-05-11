@@ -111,7 +111,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       Log.d(ID_REPORT_WRITE_QUERY, "start report");
       // parameter
       param = new ArrayList<NameValuePair>();
-      /* TODO: conversion byte to string is so dangerous */
+      /* FIXME: conversion byte to string is so dangerous */
       param.add(new BasicNameValuePair("Content-Disposition: form-data; name=\"item_file[]\"; filename=\"sample_image.jpg\"\n" +
               "Content-Type: image/jpeg", bitMapData.toString()));
       param.add(new BasicNameValuePair("Content-Disposition: form-data; name=\"accuse_yn_c\"", "N"));
@@ -255,4 +255,5 @@ public class ReportWrite_Activity extends AppCompatActivity {
       Log.d(ID_REPORT_WRITE_QUERY, responseBody);
     }
   }
+  /* TODO: one more submit (include vehicle number) */
 }
