@@ -189,7 +189,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       // send a packet
       postTransaction = new Web_PostTransaction(url);
-      isSuccess = postTransaction.sendTest(param, null, bitMapData);
+      isSuccess = postTransaction.send(param, bitMapData);
       if (isSuccess) {
         final HttpEntity entity = postTransaction.getResponse().getEntity();
         try {
@@ -202,7 +202,6 @@ public class ReportWrite_Activity extends AppCompatActivity {
       return null;
     }
     protected void onPostExecute(final String responseBody) {
-      Log.d(ID_REPORT_WRITE_QUERY, "##################################");
       Log.d(ID_REPORT_WRITE_QUERY, responseBody);
     }
   }
@@ -221,12 +220,12 @@ public class ReportWrite_Activity extends AppCompatActivity {
       // parameter
       param = new ArrayList<NameValuePair>();
       /* TODO: conversion byte to string is so dangerous */
-      param.add(new BasicNameValuePair("Content-Disposition: form-data; name=\"item_file[]\"; filename=\"sample_image.jpg\"\n" +
-              "Content-Type: image/jpeg", bitMapData.toString()));
+      //param.add(new BasicNameValuePair("Content-Disposition: form-data; name=\"item_file[]\"; filename=\"sample_image.jpg\"\n" +
+      //        "Content-Type: image/jpeg", bitMapData.toString()));
 
       // send a packet
       postTransaction = new Web_PostTransaction(url);
-      isSuccess = postTransaction.send(param);
+      isSuccess = postTransaction.send(param, bitMapData);
       if (isSuccess) {
         final HttpEntity entity = postTransaction.getResponse().getEntity();
         try {
@@ -240,6 +239,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
     }
     protected void onPostExecute(final String responseBody) {
       Log.d(ID_REPORT_WRITE_QUERY, responseBody);
+
     }
   }
   /* TODO: one more submit (include vehicle number) */

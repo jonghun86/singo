@@ -30,25 +30,19 @@ public class Web_PostTransaction {
     httpPost = new HttpPost(url);
   }
 
-  public boolean sendTest(ArrayList<NameValuePair> param, List<String> mediaPathList, byte [] bitMapData) {
+  public boolean send(ArrayList<NameValuePair> param, byte [] image) {
     int status;
     Web_Cookie  cookie = Web_Cookie .getInstance();
 
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-    // Attach media files
-    for (String path : mediaPathList) {
-      // File #1
-      //builder.addBinaryBody()
-      // File #2
-      //builder.addBinaryBody()
-    }
+    //boundary ---
+    //content-disposition: form/data; filename="afsdf"
+    //
 
-
-
-
-    ByteArrayBody bab = new ByteArrayBody(bitMapData, "sample_image.jpg");
+    ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
     builder.addPart("file1", bab);
+
     // Include text body
     for (NameValuePair nvp : param) {
       builder.addTextBody(nvp.getName(), nvp.getValue());
