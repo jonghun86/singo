@@ -109,83 +109,64 @@ public class ReportWrite_Activity extends AppCompatActivity {
       param = new ArrayList<NameValuePair>();
       /* FIXME: conversion byte to string is so dangerous */
 
-      param.add(new BasicNameValuePair("accuse_yn_c", "N"));
-      param.add(new BasicNameValuePair("adr1_v", "test addr"));
-      param.add(new BasicNameValuePair("adr2_v", "test_addr2"));
-      param.add(new BasicNameValuePair("ancCheck", ""));
-      param.add(new BasicNameValuePair("basic_chk",""));
-      param.add(new BasicNameValuePair("basicOrg",	"3900000"));
-      param.add(new BasicNameValuePair("cel_no_v",	"010-2378-3205"));
-      param.add(new BasicNameValuePair("ChgBasicAnc",	"3900000"));
-      param.add(new BasicNameValuePair("ChgSubAnc",	"6410000"));
-      param.add(new BasicNameValuePair("corp_name_v",""));
-      param.add(new BasicNameValuePair("corp_no_c",""));
-      param.add(new BasicNameValuePair("corp_no_c1",""));
-      param.add(new BasicNameValuePair("corp_no_c2",""));
-      param.add(new BasicNameValuePair("corp_no_c3",""));
-      param.add(new BasicNameValuePair("cvpl_se_c",	"80030001"));
-      param.add(new BasicNameValuePair("dmge_adr1_v",""));
-      param.add(new BasicNameValuePair("dmge_aplcnt_nm_v",""));
-      param.add(new BasicNameValuePair("dmge_tel_no_v",""));
-      param.add(new BasicNameValuePair("dmge_wrkplc_v",""));
-      param.add(new BasicNameValuePair("domain",	"gmail.com"));
-      param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q="));
-      param.add(new BasicNameValuePair("email_v",	"6883205@gmail.com"));
-      param.add(new BasicNameValuePair("evadeReasonFocusChk",""));
-      param.add(new BasicNameValuePair("evadeTargetFocusChk",""));
+      // createPcCvreq
 
       param.add(new BasicNameValuePair("flag",	"N"));
-      param.add(new BasicNameValuePair("fOpenYn",	"N"));
-      param.add(new BasicNameValuePair("getFocusPro1",	"1"));
-      param.add(new BasicNameValuePair("getFocusPro2","1"));
-      param.add(new BasicNameValuePair("grp_name",""));
-      param.add(new BasicNameValuePair("grp3_peti_yn_c",	"N"));
-      param.add(new BasicNameValuePair("hPersonallykind",""));
-      param.add(new BasicNameValuePair("indvdlinfo_view_agre_yn_c",	"Y"));
-      param.add(new BasicNameValuePair("jgubun", "1"));
-      param.add(new BasicNameValuePair("jumin_no_c",""));
-      param.add(new BasicNameValuePair("jumin1",""));
-      param.add(new BasicNameValuePair("jumin2",""));
-      param.add(new BasicNameValuePair("juminNo",""));
-      param.add(new BasicNameValuePair("juso2Anc_Basic",	"3900000"));
-      param.add(new BasicNameValuePair("juso2Anc_Sub",	"6410000"));
-      param.add(new BasicNameValuePair("ls",	"10"));
-      param.add(new BasicNameValuePair("mail",	"on"));
-      param.add(new BasicNameValuePair("mail_attch_yn_c",	"Y"));
-      param.add(new BasicNameValuePair("mail2", "on"));
-      param.add(new BasicNameValuePair("mem_id_v",	"ggungnae"));
-      param.add(new BasicNameValuePair("mem_native_yn_c",""));
-      param.add(new BasicNameValuePair("memId","ggungnae"));
-      param.add(new BasicNameValuePair("menu1","pc"));
       param.add(new BasicNameValuePair("menuGubun", "0"));
-      param.add(new BasicNameValuePair("mode", ""));
-      param.add(new BasicNameValuePair("mypeti_view_method_c", "1"));
-      param.add(new BasicNameValuePair("occurrence_same_addr", "Y"));
-      param.add(new BasicNameValuePair("open_yn_c",	"N"));
+      param.add(new BasicNameValuePair("menu1","pc"));
+      param.add(new BasicNameValuePair("mem_id_v",	"ggungnae"));
+      param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
+      param.add(new BasicNameValuePair("zipcode_c",	"14225"));
+      param.add(new BasicNameValuePair("cel_no_v",	"010-2378-3205"));
+      param.add(new BasicNameValuePair("email_v",	"6883205@gmail.com"));
+      param.add(new BasicNameValuePair("basic_chk",""));
+      param.add(new BasicNameValuePair("peti_nti_method_c",	"00570005"));
+      param.add(new BasicNameValuePair("ls",	"10"));
+      param.add(new BasicNameValuePair("fOpenYn",	"N"));
+      param.add(new BasicNameValuePair("scode",	"412103187038"));
+      param.add(new BasicNameValuePair("jgubun", "1"));
+      param.add(new BasicNameValuePair("memId","ggungnae"));
+      param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q="));
+      param.add(new BasicNameValuePair("peter_name_v","test_name"));
+      param.add(new BasicNameValuePair("juso2Anc_Sub",	"6410000"));
+      param.add(new BasicNameValuePair("juso2Anc_Basic",	"3900000"));
+      param.add(new BasicNameValuePair("ChgSubAnc",	"6410000"));
+      param.add(new BasicNameValuePair("ChgBasicAnc",	"3900000"));
+      param.add(new BasicNameValuePair("snsTokenMessage",	"%5B%EB%AF%BC%EC%9B%90%5D+%EB%AF%BC%EC%9B%90+%EC%8B%A0%EC%B2%AD"));
+      param.add(new BasicNameValuePair("third_person_sup_yn_c",	"Y"));
+      param.add(new BasicNameValuePair("grp3_peti_yn_c",	"N"));
+      param.add(new BasicNameValuePair("userName",	"test_name"));
       param.add(new BasicNameValuePair("peter_cel_no_v1",	"010"));
       param.add(new BasicNameValuePair("peter_cel_no_v2",	"2378"));
       param.add(new BasicNameValuePair("peter_cel_no_v3",	"3205"));
       param.add(new BasicNameValuePair("peter_email_v2",	"gmail.com"));
-      param.add(new BasicNameValuePair("peter_name_v","test_name"));
-      param.add(new BasicNameValuePair("peter_tel_no_v1",""));
-      param.add(new BasicNameValuePair("peter_tel_no_v2",""));
-      param.add(new BasicNameValuePair("peter_tel_no_v3",""));
-      param.add(new BasicNameValuePair("peti_nti_method_c",	"00570005"));
-      param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
-      param.add(new BasicNameValuePair("peti_reason_l", "�׽�Ʈ ����(test contents)"));
-      param.add(new BasicNameValuePair("peti_title_v","�׽�Ʈ ����(test topic)"));
-      param.add(new BasicNameValuePair("primary_anc_code_v", ""));
-      param.add(new BasicNameValuePair("proc_rcv_yn_c",	"N"));
-      param.add(new BasicNameValuePair("prv_flag", ""));
-      param.add(new BasicNameValuePair("residentNoCheckYn", ""));
-      param.add(new BasicNameValuePair("scode",	"412103187038"));
-      param.add(new BasicNameValuePair("sms",	"on"));
-      param.add(new BasicNameValuePair("snsTokenMessage",	"%5B%EB%AF%BC%EC%9B%90%5D+%EB%AF%BC%EC%9B%90+%EC%8B%A0%EC%B2%AD"));
+      param.add(new BasicNameValuePair("domain",	"gmail.com"));
+      param.add(new BasicNameValuePair("adr1_v", "test addr"));
+      param.add(new BasicNameValuePair("adr2_v", "test_addr2"));
+      param.add(new BasicNameValuePair("occurrence_same_addr", "Y"));
       param.add(new BasicNameValuePair("subOrg", "6410000"));
-      param.add(new BasicNameValuePair("tel_no_v", ""));
-      param.add(new BasicNameValuePair("third_person_sup_yn_c",	"Y"));
-      param.add(new BasicNameValuePair("userName",	"test_name"));
-      param.add(new BasicNameValuePair("zipcode_c",	"14225"));
+      param.add(new BasicNameValuePair("basicOrg",	"3900000"));
+      param.add(new BasicNameValuePair("mail_attch_yn_c",	"Y"));
+      param.add(new BasicNameValuePair("mypeti_view_method_c", "1"));
+      // title
+      param.add(new BasicNameValuePair("peti_title_v","�׽�Ʈ ����(test topic)"));
+      param.add(new BasicNameValuePair("getFocusPro1",	"1"));
+      // content
+      param.add(new BasicNameValuePair("peti_reason_l", "�׽�Ʈ ����(test contents)"));
+      param.add(new BasicNameValuePair("getFocusPro2","1"));
+      // file 1
+      // ???
+      param.add(new BasicNameValuePair("proc_rcv_yn_c",	"N"));
+      // check if item has reported
+      param.add(new BasicNameValuePair("accuse_yn_c", "N"));
+      param.add(new BasicNameValuePair("indvdlinfo_view_agre_yn_c",	"Y"));
+      // give report information to another division
+      param.add(new BasicNameValuePair("open_yn_c",	"N"));
+      param.add(new BasicNameValuePair("cvpl_se_c",	"80030001"));
+      //param.add(new BasicNameValuePair("sms",	"on"));
+
+
+
 
       // send a packet
       postTransaction = new Web_PostTransaction(url);
