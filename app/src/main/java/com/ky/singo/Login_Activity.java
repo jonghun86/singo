@@ -298,11 +298,11 @@ public class Login_Activity extends AppCompatActivity implements LoaderCallbacks
    */
   public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-    private final String mEmail;
-    private final String mPassword;
-    UserLoginTask(String email, String password) {
-      mEmail = email;
-      mPassword = password;
+    private final String userLoginId;
+    private final String userLoginPw;
+    UserLoginTask(String id, String pw) {
+      userLoginId = id;
+      userLoginPw = pw;
     }
 
     @Override
@@ -314,8 +314,8 @@ public class Login_Activity extends AppCompatActivity implements LoaderCallbacks
 
       // parameter
       param = new ArrayList<NameValuePair>();
-      param.add(new BasicNameValuePair("memId", mEmail));
-      param.add(new BasicNameValuePair("memPw", mPassword));
+      param.add(new BasicNameValuePair("memId", userLoginId));
+      param.add(new BasicNameValuePair("memPw", userLoginPw));
       param.add(new BasicNameValuePair("execmode", "Y"));
       param.add(new BasicNameValuePair("isPeti", "N"));
 
@@ -331,6 +331,7 @@ public class Login_Activity extends AppCompatActivity implements LoaderCallbacks
 
       if (isSuccess == true) {
         Intent intent = new Intent(Login_Activity.this, ReportList_Activity.class);
+        //intent.putExtra(getResource().﻿﻿getString(intent_query_mem_id), userLoginId);
         startActivity(intent);
       }
       else {

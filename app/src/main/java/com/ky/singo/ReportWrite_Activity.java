@@ -109,32 +109,45 @@ public class ReportWrite_Activity extends AppCompatActivity {
       param = new ArrayList<NameValuePair>();
       /* FIXME: conversion byte to string is so dangerous */
 
-      // createPcCvreq
-
       param.add(new BasicNameValuePair("flag",	"N"));
       param.add(new BasicNameValuePair("menuGubun", "0"));
       param.add(new BasicNameValuePair("menu1","pc"));
+      // user ID
       param.add(new BasicNameValuePair("mem_id_v",	"ggungnae"));
       param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
       param.add(new BasicNameValuePair("zipcode_c",	"14225"));
       param.add(new BasicNameValuePair("cel_no_v",	"010-2378-3205"));
       param.add(new BasicNameValuePair("email_v",	"6883205@gmail.com"));
-      param.add(new BasicNameValuePair("basic_chk",""));
+      // WTF?
       param.add(new BasicNameValuePair("peti_nti_method_c",	"00570005"));
       param.add(new BasicNameValuePair("ls",	"10"));
       param.add(new BasicNameValuePair("fOpenYn",	"N"));
+      // WTF?
       param.add(new BasicNameValuePair("scode",	"412103187038"));
       param.add(new BasicNameValuePair("jgubun", "1"));
+      // second setting?
+      // what is difference between memId and mem_id_v
       param.add(new BasicNameValuePair("memId","ggungnae"));
+      // WTF?
       param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q="));
+
+      // WTF?
+      // who is peter?
+      // Korean name??
       param.add(new BasicNameValuePair("peter_name_v","test_name"));
+      // WTF?
       param.add(new BasicNameValuePair("juso2Anc_Sub",	"6410000"));
       param.add(new BasicNameValuePair("juso2Anc_Basic",	"3900000"));
       param.add(new BasicNameValuePair("ChgSubAnc",	"6410000"));
       param.add(new BasicNameValuePair("ChgBasicAnc",	"3900000"));
+      // I don't know what it is. But it seems to be set to same value in all query
       param.add(new BasicNameValuePair("snsTokenMessage",	"%5B%EB%AF%BC%EC%9B%90%5D+%EB%AF%BC%EC%9B%90+%EC%8B%A0%EC%B2%AD"));
+
+      // WTF?
       param.add(new BasicNameValuePair("third_person_sup_yn_c",	"Y"));
       param.add(new BasicNameValuePair("grp3_peti_yn_c",	"N"));
+
+      // Korean name??
       param.add(new BasicNameValuePair("userName",	"test_name"));
       param.add(new BasicNameValuePair("peter_cel_no_v1",	"010"));
       param.add(new BasicNameValuePair("peter_cel_no_v2",	"2378"));
@@ -156,6 +169,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
       param.add(new BasicNameValuePair("getFocusPro2","1"));
       // file 1
       // ???
+
+      // WTF?
       param.add(new BasicNameValuePair("proc_rcv_yn_c",	"N"));
       // check if item has reported
       param.add(new BasicNameValuePair("accuse_yn_c", "N"));
