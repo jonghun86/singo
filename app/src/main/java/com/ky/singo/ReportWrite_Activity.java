@@ -176,7 +176,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       // file 1
       // ???
 
-      // WTF?
+      // WTF? - 귀하께서 위 민원과 동일 내용의 민원을 이미 행정기관 등에 제출하여 그 처리결과를 받은 적이 있습니까?
       param.add(new BasicNameValuePair("proc_rcv_yn_c",	"N"));
       // check if item has reported
       param.add(new BasicNameValuePair("accuse_yn_c", "N"));
