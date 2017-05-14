@@ -109,12 +109,41 @@ public class ReportWrite_Activity extends AppCompatActivity {
       param = new ArrayList<NameValuePair>();
       /* FIXME: conversion byte to string is so dangerous */
 
+      // -------------------------------------------------------------------------------------------
+      // STEP 1. 신청서 작성 및 유사사례 확인
+      // 개인정보 수집 및 이용 안내
+      param.add(new BasicNameValuePair("third_person_sup_yn_c",	"Y"));
+      // 신청인 본인인증
+      //  - 개인 N, 단체 Y, 기업 C
+      //  - 신청인 이름
+      param.add(new BasicNameValuePair("grp3_peti_yn_c",	"N"));
+      param.add(new BasicNameValuePair("userName",	"test_name"));
+
+      // 신청인 기본정보
+      // - 휴대전화
+      // - email
+      param.add(new BasicNameValuePair("peter_cel_no_v1",	"010"));
+      param.add(new BasicNameValuePair("peter_cel_no_v2",	"2378"));
+      param.add(new BasicNameValuePair("peter_cel_no_v3",	"3205"));
+      param.add(new BasicNameValuePair("peter_email_v1",	"mmyjh86"));
+      param.add(new BasicNameValuePair("peter_email_v2",	"gmail.com"));
+      param.add(new BasicNameValuePair("domain",	"gmail.com"));
+
+      //
+      //param.add(new BasicNameValuePair("peter_",	"gmail.com"));
+
+
+
+      // We don't know usage of hidden value (fixed number)
       param.add(new BasicNameValuePair("flag",	"N"));
       param.add(new BasicNameValuePair("menuGubun", "0"));
       param.add(new BasicNameValuePair("menu1","pc"));
+      param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
+
+
       // user ID
       param.add(new BasicNameValuePair("mem_id_v",	"ggungnae"));
-      param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
+
       param.add(new BasicNameValuePair("zipcode_c",	"14225"));
       param.add(new BasicNameValuePair("cel_no_v",	"010-2378-3205"));
       param.add(new BasicNameValuePair("email_v",	"6883205@gmail.com"));
@@ -149,22 +178,44 @@ public class ReportWrite_Activity extends AppCompatActivity {
       // maybe it is for sns sharing.
       param.add(new BasicNameValuePair("snsTokenMessage",	"%5B%EB%AF%BC%EC%9B%90%5D+%EB%AF%BC%EC%9B%90+%EC%8B%A0%EC%B2%AD"));
 
-      // WTF? - agreement for 개인정보의 수집 및 이용 목적
-      param.add(new BasicNameValuePair("third_person_sup_yn_c",	"Y"));
-      param.add(new BasicNameValuePair("grp3_peti_yn_c",	"N"));
+
+
+
 
       // Korean name?? - ok its korean name.(peter - requester) */
-      param.add(new BasicNameValuePair("userName",	"test_name"));
-      param.add(new BasicNameValuePair("peter_cel_no_v1",	"010"));
-      param.add(new BasicNameValuePair("peter_cel_no_v2",	"2378"));
-      param.add(new BasicNameValuePair("peter_cel_no_v3",	"3205"));
-      param.add(new BasicNameValuePair("peter_email_v2",	"gmail.com"));
-      param.add(new BasicNameValuePair("domain",	"gmail.com"));
+
+
+
       param.add(new BasicNameValuePair("adr1_v", "test addr"));
       param.add(new BasicNameValuePair("adr2_v", "test_addr2"));
       param.add(new BasicNameValuePair("occurrence_same_addr", "Y"));
+
+
+      /*
+      <option value="6420000">강원도</option>
+      <option value="6410000">경기도</option>
+      <option value="6480000">경상남도</option>
+      <option value="6470000">경상북도</option>
+      <option value="6290000">광주광역시</option>
+      <option value="6270000">대구광역시</option>
+      <option value="6300000">대전광역시</option>
+      <option value="6260000">부산광역시</option>
+      <option value="6110000">서울특별시</option>
+      <option value="5690000">세종특별자치시</option>
+      <option value="6310000">울산광역시</option>
+      <option value="6280000">인천광역시</option>
+      <option value="6460000">전라남도</option>
+      <option value="6450000">전라북도</option>
+      <option value="6500000">제주특별자치도</option>
+      <option value="6440000">충청남도</option>
+      <option value="6430000">충청북도</option>
+       */
+      // Province
       param.add(new BasicNameValuePair("subOrg", "6410000"));
+      // Gu
       param.add(new BasicNameValuePair("basicOrg",	"3900000"));
+
+
       param.add(new BasicNameValuePair("mail_attch_yn_c",	"Y"));
       param.add(new BasicNameValuePair("mypeti_view_method_c", "1"));
       // title
