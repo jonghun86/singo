@@ -14,7 +14,6 @@ import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by mmyjh on 2017-04-25.
@@ -35,10 +34,6 @@ public class Web_PostTransaction {
     Web_Cookie  cookie = Web_Cookie .getInstance();
 
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-
-    //boundary ---
-    //content-disposition: form/data; filename="afsdf"
-    //
 
     ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
     builder.addPart("file1", bab);
