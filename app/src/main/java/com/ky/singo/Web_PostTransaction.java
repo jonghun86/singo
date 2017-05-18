@@ -29,14 +29,14 @@ public class Web_PostTransaction {
     httpPost = new HttpPost(url);
   }
 
-  public boolean send(ArrayList<NameValuePair> param, byte [] image) {
+  public boolean send(ArrayList<NameValuePair> param, byte [] image, String test) {
     int status;
     Web_Cookie  cookie = Web_Cookie .getInstance();
 
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
     ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
-    builder.addPart("file1", bab);
+    builder.addPart(test, bab);
 
     // Include text body
     for (NameValuePair nvp : param) {

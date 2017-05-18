@@ -119,7 +119,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       //  - 개인 N, 단체 Y, 기업 C
       //  - 신청인 이름
       param.add(new BasicNameValuePair("grp3_peti_yn_c",	"N"));
-      param.add(new BasicNameValuePair("userName",	"test_name"));
+      param.add(new BasicNameValuePair("userName",	"유종훈"));
 
       // 신청인 기본정보
       // - 휴대전화
@@ -140,8 +140,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
       //    + 시도
       //    + 시군구
       param.add(new BasicNameValuePair("occurrence_same_addr", "N"));
-      param.add(new BasicNameValuePair("subOrg", "6410000"));
-      param.add(new BasicNameValuePair("basicOrg",	"3900000"));
+      param.add(new BasicNameValuePair("subOrg", "6110000"));
+      param.add(new BasicNameValuePair("basicOrg",	"3210000"));
 
       // 나의 민원 확인 방식
       //  - 1 : 간편형
@@ -163,45 +163,49 @@ public class ReportWrite_Activity extends AppCompatActivity {
       // 귀하의 민원신청 내용을 공유하는 것에 동의하십니까?
       param.add(new BasicNameValuePair("open_yn_c",	"N"));
 
-      // We don't know usage of hidden value (fixed number)
+      // We don't know usage of hidden value
       param.add(new BasicNameValuePair("flag",	"N"));
       param.add(new BasicNameValuePair("menuGubun", "0"));
       param.add(new BasicNameValuePair("menu1","pc"));
+      param.add(new BasicNameValuePair("peti_no_c",""));
+      param.add(new BasicNameValuePair("mem_id_v",	"mmyjh86"));
       param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
-
-
-      // user ID
-      param.add(new BasicNameValuePair("mem_id_v",	"ggungnae"));
-
-      param.add(new BasicNameValuePair("zipcode_c",	"14225"));
-      param.add(new BasicNameValuePair("cel_no_v",	"010-2378-3205"));
-      param.add(new BasicNameValuePair("email_v",	"6883205@gmail.com"));
+      param.add(new BasicNameValuePair("cel_no_v",	"010-9333-4299"));
+      param.add(new BasicNameValuePair("email_v",	"mmyjh86@gmail.com"));
+      // Request code
+      //
+      // - 00570008 : 전자우편,sms,서면
+      // - 00570005 : 전자우편, sms
+      // - 00570006 : 전자우편, 서면
+      // - 00570007 : sms, 서면
+      // - 00570002 : 전자우편
+      // - 00570004 : sms
+      // - 00570001 : 서면
+      // - 00570003 : 나머지
+      param.add(new BasicNameValuePair("peti_nti_method_c",	"00570003"));
       // WTF?
-      // peti_nti_method_c - fixed value. maybe it is request method code.
-      param.add(new BasicNameValuePair("peti_nti_method_c",	"00570005"));
       param.add(new BasicNameValuePair("ls",	"10"));
-      //Can you agree to open this file to others?
       param.add(new BasicNameValuePair("fOpenYn",	"N"));
-      // WTF? - road addr code
-      param.add(new BasicNameValuePair("scode",	"412103187038"));
+      // road addr code ??
+      param.add(new BasicNameValuePair("scode",	"116504163196"));
       // jibun addr or road addr
       param.add(new BasicNameValuePair("jgubun", "1"));
       // second setting?
       // what is difference between memId and mem_id_v
-      param.add(new BasicNameValuePair("memId","ggungnae"));
+      param.add(new BasicNameValuePair("memId","mmyjh86"));
       // WTF?
       param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q="));
 
       // WTF?
       // who is peter?
       // Korean name??
-      param.add(new BasicNameValuePair("peter_name_v","test_name"));
+      param.add(new BasicNameValuePair("peter_name_v","유종훈"));
       // WTF? - maybe 경기도 code
-      param.add(new BasicNameValuePair("juso2Anc_Sub",	"6410000"));
+      param.add(new BasicNameValuePair("juso2Anc_Sub",	"6110000"));
       //code":"3900000","name":"광명시"
-      param.add(new BasicNameValuePair("juso2Anc_Basic",	"3900000"));
-      param.add(new BasicNameValuePair("ChgSubAnc",	"6410000"));
-      param.add(new BasicNameValuePair("ChgBasicAnc",	"3900000"));
+      param.add(new BasicNameValuePair("juso2Anc_Basic",	"3210000"));
+      param.add(new BasicNameValuePair("ChgSubAnc",	"6110000"));
+      param.add(new BasicNameValuePair("ChgBasicAnc",	"3210000"));
       // I don't know what it is. But it seems to be set to same value in all query
       // encoded string for "[민원] 민원 신청" [https://meyerweb.com/eric/tools/decoder/]
       // maybe it is for sns sharing.
@@ -215,23 +219,11 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
 
 
-      // Korean name?? - ok its korean name.(peter - requester) */
-
-
-
-
-
-
-
-
-
-
-
 
 
       // send a packet
       postTransaction = new Web_PostTransaction(url);
-      isSuccess = postTransaction.send(param, bitMapData);
+      isSuccess = postTransaction.send(param, bitMapData, "file1");
       if (isSuccess) {
         final HttpEntity entity = postTransaction.getResponse().getEntity();
         try {
@@ -245,6 +237,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
     }
     protected void onPostExecute(final String responseBody) {
       Log.d(ID_REPORT_WRITE_QUERY, responseBody);
+      Log.d(ID_REPORT_WRITE_QUERY, "#############");
     }
   }
 
@@ -264,7 +257,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       // send a packet
       postTransaction = new Web_PostTransaction(url);
-      isSuccess = postTransaction.send(param, bitMapData);
+      isSuccess = postTransaction.send(param, bitMapData, "item_file[]");
       if (isSuccess) {
         final HttpEntity entity = postTransaction.getResponse().getEntity();
         try {
