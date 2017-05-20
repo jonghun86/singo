@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -94,6 +95,14 @@ public class Login_Activity extends AppCompatActivity implements LoaderCallbacks
 
     mLoginFormView = findViewById(R.id.login_form);
     mProgressView = findViewById(R.id.login_progress);
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // To be removed...
+    // For test
+    mAuthTask = new UserLoginTask("-", "-");
+    mAuthTask.execute((Void) null);
+    //////////////////////////////////////////////////////////////////////////////////
   }
 
   private void populateAutoComplete() {
@@ -307,21 +316,39 @@ public class Login_Activity extends AppCompatActivity implements LoaderCallbacks
 
     @Override
     protected Boolean doInBackground(Void... not_used) {
-      final String url = "https://www.epeople.go.kr/ULogin.do";
-      //final String url = "https://m.epeople.go.kr/common/ULoginIdPWd.do";
-      ArrayList<NameValuePair> param;
+      Boolean isSuccess = false;
+      final String loginUrl = "https://www.epeople.go.kr/ULogin.do";
+      final String DupInfoUrl = "https://www.epeople.go.kr/jsp/user/pc/cvreq/UPcCvreqForm.jsp";
+      ArrayList<NameValuePair> postParam;
+      ArrayList<NameValuePair> getParam;
       Web_PostTransaction postTransaction;
+      Web_GetTransaction getTransaction;
 
       // parameter
-      param = new ArrayList<NameValuePair>();
-      param.add(new BasicNameValuePair("memId", userLoginId));
-      param.add(new BasicNameValuePair("memPw", userLoginPw));
-      param.add(new BasicNameValuePair("execmode", "Y"));
-      param.add(new BasicNameValuePair("isPeti", "N"));
+      postParam = new ArrayList<NameValuePair>();
+      postParam.add(new BasicNameValuePair("memId", userLoginId));
+      postParam.add(new BasicNameValuePair("memPw", userLoginPw));
+      postParam.add(new BasicNameValuePair("execmode", "Y"));
+      postParam.add(new BasicNameValuePair("isPeti", "N"));
 
       // send a packet
-      postTransaction = new Web_PostTransaction(url);
-      return postTransaction.send(param);
+      postTransaction = new Web_PostTransaction(loginUrl);
+
+      isSuccess = postTransaction.send(postParam);
+
+      // Login success
+      if (isSuccess == true) {
+        getTransaction = new Web_GetTransaction(DupInfoUrl);
+        getParam = new ArrayList<NameValuePair>();
+        getParam.add(new BasicNameValuePair("flag", "N"));
+        isSuccess = getTransaction.send(getParam);
+      }
+      // Login error
+      else {
+        Log.d(ID_USER_LOGIN, "LOGIN error");
+      }
+
+      return isSuccess;
     }
 
     @Override
@@ -335,6 +362,7 @@ public class Login_Activity extends AppCompatActivity implements LoaderCallbacks
         startActivity(intent);
       }
       else {
+        Log.d(ID_USER_LOGIN, "Failed to send transaction");
         Toast.makeText(getApplicationContext(), "Unknown error", Toast.LENGTH_SHORT);
       }
     }

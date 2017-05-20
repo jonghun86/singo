@@ -11,8 +11,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 /**
@@ -35,19 +37,30 @@ public class Web_PostTransaction {
 
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-    ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
-    builder.addPart(test, bab);
-
     // Include text body
-    for (NameValuePair nvp : param) {
-      builder.addTextBody(nvp.getName(), nvp.getValue());
-    }
 
     try {
+      for (NameValuePair nvp : param) {
+        //builder.addTextBody(nvp.getName(), nvp.getValue(), ContentType.create(HTTP.PLAIN_TEXT_TYPE, HTTP.));
+        builder.addPart(nvp.getName(), new StringBody(nvp.getValue(), Charset.forName("EUC-KR")));
+      }
+
+      ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
+      builder.addPart(test, bab);
+
       // Send a packet
       HttpClient httpClient = new DefaultHttpClient();
       httpPost.setEntity(builder.build());
       httpPost.setHeader("Cookie", cookie.getKey());
+      httpPost.setHeader("Cache-Control", "max-age=0");
+      httpPost.setHeader("Accept-Encoding", "gzip, deflate, br");
+      httpPost.setHeader("Accept-Language", "ko-KR,ko;q=0.8,en-US;q=0.6,en;q=0.4");
+      httpPost.setHeader("Connection", "keep-alive");
+      httpPost.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+      httpPost.setHeader("Upgrade-Insecure-Requests", "1");
+      httpPost.setHeader("Origin", "https://www.epeople.go.kr");
+      httpPost.setHeader("Host", "www.epeople.go.kr");
+      httpPost.setHeader("Referer", "https://www.epeople.go.kr/jsp/user/pc/cvreq/UPcCvreqForm.jsp?flag=N&");
       response = httpClient.execute(httpPost);
 
       // Receive a response packet

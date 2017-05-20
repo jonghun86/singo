@@ -124,14 +124,14 @@ public class ReportWrite_Activity extends AppCompatActivity {
       // 신청인 기본정보
       // - 휴대전화
       param.add(new BasicNameValuePair("peter_cel_no_v1",	"010"));
-      param.add(new BasicNameValuePair("peter_cel_no_v2",	"9333"));
-      param.add(new BasicNameValuePair("peter_cel_no_v3",	"4299"));
+      param.add(new BasicNameValuePair("peter_cel_no_v2",	""));
+      param.add(new BasicNameValuePair("peter_cel_no_v3",	""));
       // - email
-      param.add(new BasicNameValuePair("peter_email_v1",	"mmyjh86"));
+      param.add(new BasicNameValuePair("peter_email_v1",	""));
       param.add(new BasicNameValuePair("peter_email_v2",	"gmail.com"));
       param.add(new BasicNameValuePair("domain",	"gmail.com"));
       // - 주소
-      param.add(new BasicNameValuePair("peter_zipcode_c",	"06762"));
+      param.add(new BasicNameValuePair("zipcode_c",	"06762"));
       param.add(new BasicNameValuePair("adr1_v", "서울특별시 서초구 바우뫼로11길 76,"));
       param.add(new BasicNameValuePair("adr2_v", "104호"));
 
@@ -170,7 +170,6 @@ public class ReportWrite_Activity extends AppCompatActivity {
       param.add(new BasicNameValuePair("peti_no_c",""));
       param.add(new BasicNameValuePair("mem_id_v",	"mmyjh86"));
       param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
-      param.add(new BasicNameValuePair("cel_no_v",	"010-9333-4299"));
       param.add(new BasicNameValuePair("email_v",	"mmyjh86@gmail.com"));
       // Request code
       //
@@ -194,7 +193,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       // what is difference between memId and mem_id_v
       param.add(new BasicNameValuePair("memId","mmyjh86"));
       // WTF?
-      param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q="));
+      param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEA9ynrPjBrDb/LVDT8f/lW6XO62LtAufyVn3GupPV0rIk="));
 
       // WTF?
       // who is peter?
@@ -219,6 +218,36 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
 
 
+      // empty
+      param.add(new BasicNameValuePair("mode",	""));
+      param.add(new BasicNameValuePair("jumin_no_c",	""));
+      param.add(new BasicNameValuePair("mem_native_yn_c",	""));
+      param.add(new BasicNameValuePair("tel_no_v",	""));
+      param.add(new BasicNameValuePair("cel_no_v",	""));
+      param.add(new BasicNameValuePair("basic_chk",	""));
+      param.add(new BasicNameValuePair("evadeTargetFocusChk",	""));
+      param.add(new BasicNameValuePair("evadeReasonFocusChk",	""));
+      param.add(new BasicNameValuePair("corp_no_c",	""));
+      param.add(new BasicNameValuePair("juminNo",	""));
+      param.add(new BasicNameValuePair("residentNoCheckYn",	""));
+      param.add(new BasicNameValuePair("jumin1",	""));
+      param.add(new BasicNameValuePair("jumin2",	""));
+      param.add(new BasicNameValuePair("hPersonallykind",	""));
+      param.add(new BasicNameValuePair("prv_flag",	""));
+      param.add(new BasicNameValuePair("corp_name_v",	""));
+      param.add(new BasicNameValuePair("corp_no_c1",	""));
+      param.add(new BasicNameValuePair("corp_no_c2",	""));
+      param.add(new BasicNameValuePair("corp_no_c3",	""));
+      param.add(new BasicNameValuePair("grp_name",	""));
+      param.add(new BasicNameValuePair("peter_tel_no_v1",	""));
+      param.add(new BasicNameValuePair("peter_tel_no_v2",	""));
+      param.add(new BasicNameValuePair("peter_tel_no_v3",	""));
+      param.add(new BasicNameValuePair("primary_anc_code_v",	""));
+      param.add(new BasicNameValuePair("dmge_aplcnt_nm_v",	""));
+      param.add(new BasicNameValuePair("dmge_wrkplc_v",	""));
+      param.add(new BasicNameValuePair("dmge_adr1_v",	""));
+      param.add(new BasicNameValuePair("dmge_tel_no_v",	""));
+      param.add(new BasicNameValuePair("ancCheck",	""));
 
 
       // send a packet
