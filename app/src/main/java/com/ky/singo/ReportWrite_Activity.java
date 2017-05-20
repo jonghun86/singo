@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 public class ReportWrite_Activity extends AppCompatActivity {
   final String fileUploadUrl = "https://www.epeople.go.kr/applex_wdigm/applet/jsp/fileup_cu_real.jsp";
   final String contentUploadUrl = "https://www.epeople.go.kr/jsp/user/pc/cvreq/UPcRecommendOrg.jsp";
+  final String summaryUploadUrl = "https://www.epeople.go.kr/onto/ajax/ajax_onto_recommand_req.jsp";
 
   private final String ID_REPORT_WRITE_QUERY = "REPORT_WRITE";
   private static final int SELECT_PICTURE = 1;
@@ -96,6 +96,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
     ArrayList<NameValuePair> param;
     ReportData reportData;
     String responseBody;
+
+    // 동영상 or 사진 첨부를 누락한 경우
     if (bitMapData == null) {
       Toast.makeText(getApplicationContext(), "사진/동영상이 첨부되지 않았습니다.",
         Toast.LENGTH_SHORT).show();
@@ -104,14 +106,11 @@ public class ReportWrite_Activity extends AppCompatActivity {
     Log.d(ID_REPORT_WRITE_QUERY, "Upload media files");
 
 
-
-
-    // send a packet
     try {
       /////////////////////////////////////////////////////////////////////////////////////////////
       // Upload Video Files
       uploadTask    = new ReportUploadPostTask(fileUploadUrl);
-      param         = getPredefinedParam(PostReqType.FILE_UPLOAD);
+      param         = getPredefinedParam(PostReqType.MULTIMEDIA_UPLOAD);
       reportData    = new ReportData(param, "item_file[]", bitMapData);
       responseBody  = uploadTask.execute(reportData).get();
       if (responseBody == null) {
@@ -121,19 +120,46 @@ public class ReportWrite_Activity extends AppCompatActivity {
       }
 
       /////////////////////////////////////////////////////////////////////////////////////////////
-      // Upload Video Files
+      //
       uploadTask    = new ReportUploadPostTask(contentUploadUrl);
-      param         = getPredefinedParam(PostReqType.UPCRECORG_REQ1);
+      param         = getPredefinedParam(PostReqType.CONTENTS_REQUEST);
       reportData    = new ReportData(param, "file1", bitMapData);
       responseBody  = uploadTask.execute(reportData).get();
       // [HACK] Response is arrived but server sent error because of wrong request. Server sent
       // message "정상적인 접근이 아닙니다" in response body.
       if (responseBody.length() < 500) {
-        Log.d(ID_REPORT_WRITE_QUERY, "Abnormal access (UPCRECORG_REQ1)");
+        Log.d(ID_REPORT_WRITE_QUERY, "Abnormal access (CONTENTS_REQUEST)");
         Toast.makeText(getApplicationContext(), "정상적인 접근이 아닙니다.",
           Toast.LENGTH_SHORT).show();
         return false;
       }
+      /*
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      //
+      uploadTask    = new ReportUploadPostTask(summaryUploadUrl);
+      param         = getPredefinedParam(PostReqType.CONTENTS_SUMMARY);
+      reportData    = new ReportData(param, null, null);
+      responseBody  = uploadTask.execute(reportData).get();
+      if (responseBody == null) {
+        Toast.makeText(getApplicationContext(), "------------------.",
+          Toast.LENGTH_SHORT).show();
+        return false;
+      }
+      Log.d("----1", responseBody);
+
+      /////////////////////////////////////////////////////////////////////////////////////////////
+      //
+      uploadTask    = new ReportUploadPostTask(contentUploadUrl);
+      param         = getPredefinedParam(PostReqType.CONTENTS_WRITE);
+      reportData    = new ReportData(param, null, null);
+      responseBody  = uploadTask.execute(reportData).get();
+      if (responseBody == null) {
+        Toast.makeText(getApplicationContext(), "########",
+          Toast.LENGTH_SHORT).show();
+        return false;
+      }     */
+      Log.d("----2", responseBody);
+
 
       return true;
     } catch (Exception e) {
@@ -143,21 +169,66 @@ public class ReportWrite_Activity extends AppCompatActivity {
   }
 
 
+  private class ReportData {
+    String mediaTag;
+    byte [] mediaSource;
+    ArrayList<NameValuePair> param;
+    ReportData(ArrayList<NameValuePair> param, String mediaTag, byte [] mediaSource) {
+      this.mediaTag = mediaTag;
+      this.mediaSource = mediaSource;
+      this.param = param;
+    }
+  }
 
+  public class ReportUploadPostTask extends AsyncTask<ReportData, Void, String> {
+    String url;
+    Web_PostTransaction transaction;
+
+    ReportUploadPostTask(String url) {
+      this.url = url;
+      transaction = new Web_PostTransaction(url);
+    }
+
+    @Override
+    protected String doInBackground(ReportData... params) {
+      Boolean isSuccess;
+
+      // Todo
+      ReportData data = params[0];
+      if (data.mediaTag == null | data.mediaSource == null) {
+        isSuccess = transaction.send(data.param);
+      }
+      else {
+        isSuccess = transaction.send(data.param, data.mediaSource, data.mediaTag);
+      }
+      if (isSuccess) {
+        final HttpEntity entity = transaction.getResponse().getEntity();
+        try {
+          String responseBody = EntityUtils.toString(entity);
+          return responseBody;
+        } catch (Exception e) {
+          Log.d(ID_REPORT_WRITE_QUERY, e.toString());
+          e.printStackTrace();
+        }
+      }
+      return null;
+    }
+  }
 
 
   public enum PostReqType {
     // FIXME : 이름 바꿀것
-    FILE_UPLOAD,
-    UPCRECORG_REQ1,
-    UPCRECORG_REQ2
+    MULTIMEDIA_UPLOAD,
+    CONTENTS_REQUEST,
+    CONTENTS_SUMMARY,
+    CONTENTS_WRITE
   }
 
   ArrayList<NameValuePair> getPredefinedParam (PostReqType type) {
     ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
 
     switch (type) {
-      case UPCRECORG_REQ1 :
+      case CONTENTS_REQUEST:
         // -------------------------------------------------------------------------------------------
         // STEP 1. 신청서 작성 및 유사사례 확인
         // 개인정보 수집 및 이용 안내
@@ -250,8 +321,6 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("mail_attch_yn_c",	"N"));
         param.add(new BasicNameValuePair("cvpl_se_c",	"80030001"));
 
-
-
         // empty
         param.add(new BasicNameValuePair("mode",	""));
         param.add(new BasicNameValuePair("jumin_no_c",	""));
@@ -283,7 +352,151 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("dmge_tel_no_v",	""));
         param.add(new BasicNameValuePair("ancCheck",	""));
         break;
-      case UPCRECORG_REQ2 :
+      case CONTENTS_SUMMARY :
+        param.add(new BasicNameValuePair("ADR1_V", "서울특별시 서초구"));
+        param.add(new BasicNameValuePair("PETI_TITLE_V", "테스트 - 제목"));
+        param.add(new BasicNameValuePair("PETI_REASON_L", "테스트 - 내용"));
+        //FIXME
+        param.add(new BasicNameValuePair("PETI_DOCUMENT", "13900000;sample_image.jpg;"));
+        param.add(new BasicNameValuePair("PM_FLAG", "80030001"));
+        break;
+      case CONTENTS_WRITE :
+        param.add(new BasicNameValuePair("mode", "createPcCvreq"));
+        param.add(new BasicNameValuePair("flag", "null"));
+        param.add(new BasicNameValuePair("detailView", "Y"));
+        param.add(new BasicNameValuePair("menuGubun", "0"));
+        param.add(new BasicNameValuePair("menu1"	, "pc"));
+        param.add(new BasicNameValuePair("peti_no_c", ""));
+        param.add(new BasicNameValuePair("mem_id_v", "mmyjh86"));
+        param.add(new BasicNameValuePair("anc_code_v", "1320000"));
+        param.add(new BasicNameValuePair("civil_again_c", "00600001"));
+        param.add(new BasicNameValuePair("sect_error_yn_c", "Y"));
+        param.add(new BasicNameValuePair("p_sect_error_yn_c", "Y"));
+        param.add(new BasicNameValuePair("peti_path_gubun_c", "00020011"));
+        param.add(new BasicNameValuePair("peter_name_v"	, "유종훈"));
+        param.add(new BasicNameValuePair("mem_native_yn_c", ""));
+        param.add(new BasicNameValuePair("zipcode_c", "06762"));
+        param.add(new BasicNameValuePair("adr1_v", "서울특별시 서초구 바우뫼로11길 76,"));
+        param.add(new BasicNameValuePair("adr2_v", "104호"));
+        param.add(new BasicNameValuePair("peti_job_c", ""));
+        param.add(new BasicNameValuePair("tel_no_v", ""));
+        param.add(new BasicNameValuePair("cel_no_v", ""));
+        param.add(new BasicNameValuePair("email_v", "mmyjh86@gmail.com"));
+        param.add(new BasicNameValuePair("open_yn_c", "N"));
+        param.add(new BasicNameValuePair("peti_title_v", "테스트 - 제목"));
+        param.add(new BasicNameValuePair("peti_reason_l", "테스트 - 내용"));
+        param.add(new BasicNameValuePair("peti_nti_method_c", "00570003"));
+        param.add(new BasicNameValuePair("passwd_v", ""));
+        param.add(new BasicNameValuePair("civil_rel_name_v", ""));
+        param.add(new BasicNameValuePair("civil_rel_tel_no_v", ""));
+        param.add(new BasicNameValuePair("civil_rel_zipcode_c", ""));
+        param.add(new BasicNameValuePair("civil_rel_addr_v", ""));
+        param.add(new BasicNameValuePair("civil_rel_addr1_v", ""));
+        param.add(new BasicNameValuePair("file1_name",	"sample_image.jpg"));
+        param.add(new BasicNameValuePair("file2_name", ""));
+        param.add(new BasicNameValuePair("file3_name", ""));
+        param.add(new BasicNameValuePair("file4_name", ""));
+        param.add(new BasicNameValuePair("file5_name", ""));
+        param.add(new BasicNameValuePair("file1_size", "153240"));
+        param.add(new BasicNameValuePair("file2_size", ""));
+        param.add(new BasicNameValuePair("file3_size", ""));
+        param.add(new BasicNameValuePair("file4_size", ""));
+        param.add(new BasicNameValuePair("file5_size", ""));
+        //FIXME - 날짜별로 업로드 경로가 다름
+        param.add(new BasicNameValuePair("file1", "/attach04/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
+        param.add(new BasicNameValuePair("file2"	, ""));
+        param.add(new BasicNameValuePair("file3", ""));
+        param.add(new BasicNameValuePair("file4", ""));
+        param.add(new BasicNameValuePair("file5", ""));
+        //FIXME - 날짜별로 업로드 경로가 다름
+        param.add(new BasicNameValuePair("file1_dir", "/attach04/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/"));
+        param.add(new BasicNameValuePair("file2_dir", ""));
+        param.add(new BasicNameValuePair("file3_dir", ""));
+        param.add(new BasicNameValuePair("file4_dir", ""));
+        param.add(new BasicNameValuePair("file5_dir", ""));
+        //FIXME - 날짜별로 업로드 경로가 다름
+        param.add(new BasicNameValuePair("file1_temp_dir", "/attach04/temp/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
+        param.add(new BasicNameValuePair("file2_temp_dir", ""));
+        param.add(new BasicNameValuePair("file3_temp_dir", ""));
+        param.add(new BasicNameValuePair("file4_temp_dir", ""));
+        param.add(new BasicNameValuePair("file5_temp_dir", ""));
+        param.add(new BasicNameValuePair("open_chk_c", ""));
+        param.add(new BasicNameValuePair("grp3_peti_yn_c", "N"));
+        param.add(new BasicNameValuePair("grp_name", ""));
+        param.add(new BasicNameValuePair("mail_attch_yn_c", "Y"));
+        param.add(new BasicNameValuePair("anc_c2", "1140100"));
+        param.add(new BasicNameValuePair("auto_anc_v", "1140100"));
+        param.add(new BasicNameValuePair("peti_anc_v", "1320000"));
+        param.add(new BasicNameValuePair("pre_peti_no_c", ""));
+        param.add(new BasicNameValuePair("miss_yn_c", "N"));
+        param.add(new BasicNameValuePair("peti_ip_v", "124.53.50.34"));
+        param.add(new BasicNameValuePair("anc_name_v", "경찰청"));
+        param.add(new BasicNameValuePair("multi_anc_yn_c", "N"));
+        param.add(new BasicNameValuePair("org_auto_anc_c", "1140100"));
+        param.add(new BasicNameValuePair("multi_status_c", ""));
+        param.add(new BasicNameValuePair("ombuds", ""));
+        param.add(new BasicNameValuePair("org_civil_again_c", ""));
+        param.add(new BasicNameValuePair("manual_acrc_yn_c", "N"));
+        param.add(new BasicNameValuePair("manual_yn_c", "Y"));
+        param.add(new BasicNameValuePair("auto_yn_c", "N"));
+        param.add(new BasicNameValuePair("upAncCode", "1140100"));
+        param.add(new BasicNameValuePair("seq_n", ""));
+        param.add(new BasicNameValuePair("retFAQ", "0"));
+        param.add(new BasicNameValuePair("occurrence_area", ""));
+        param.add(new BasicNameValuePair("subOrg", "6110000"));
+        param.add(new BasicNameValuePair("basicOrg", "3210000"));
+        param.add(new BasicNameValuePair("occurrence_same_addr", "Y"));
+        param.add(new BasicNameValuePair("corp_no_c", ""));
+        param.add(new BasicNameValuePair("corp_name_v", ""));
+        param.add(new BasicNameValuePair("fOpenYn", "N"));
+        //FIXME : 파일 아이디 받아오는 부분을 모르겠음
+        //바로 전 리퀘스트에 쓰이는 부분임
+        param.add(new BasicNameValuePair("file1_id", "13700034"));
+        //
+        param.add(new BasicNameValuePair("file2_id"	, ""));
+        param.add(new BasicNameValuePair("file3_id", ""));
+        param.add(new BasicNameValuePair("file4_id", ""));
+        param.add(new BasicNameValuePair("file5_id", ""));
+        param.add(new BasicNameValuePair("mypeti_view_method_c", "1"));
+        param.add(new BasicNameValuePair("scode", "116504163196"));
+        param.add(new BasicNameValuePair("jgubun", "1"));
+        param.add(new BasicNameValuePair("cvpl_se_c", "80030001"));
+        param.add(new BasicNameValuePair("dmge_aplcnt_nm_v", ""));
+        param.add(new BasicNameValuePair("dmge_wrkplc_v", ""));
+        param.add(new BasicNameValuePair("dmge_adr1_v", ""));
+        param.add(new BasicNameValuePair("dmge_tel_no_v", ""));
+        param.add(new BasicNameValuePair("jumin_no_c", ""));
+        param.add(new BasicNameValuePair("dupInfo", ""));
+        param.add(new BasicNameValuePair("third_person_sup_yn_c", "Y"));
+        param.add(new BasicNameValuePair("hPersonallykind", ""));
+        param.add(new BasicNameValuePair("evadeTargerCode", ""));
+        param.add(new BasicNameValuePair("evadeTargerCode1", ""));
+        param.add(new BasicNameValuePair("evadeReasonFocusChk", ""));
+        param.add(new BasicNameValuePair("primary_anc_code_v", ""));
+        param.add(new BasicNameValuePair("proc_rcv_yn_c", "N"));
+        param.add(new BasicNameValuePair("prv_flag", ""));
+        param.add(new BasicNameValuePair("ancCheck", ""));
+        param.add(new BasicNameValuePair("corp_no_c1", ""));
+        param.add(new BasicNameValuePair("corp_no_c2", ""));
+        param.add(new BasicNameValuePair("corp_no_c3", ""));
+        param.add(new BasicNameValuePair("consent_yn", ""));
+        param.add(new BasicNameValuePair("onto_use_yn", "0"));
+        param.add(new BasicNameValuePair("safe_civil_rate", ""));
+        param.add(new BasicNameValuePair("better_civil_rate", ""));
+        param.add(new BasicNameValuePair("accuse_yn_c", "N"));
+        param.add(new BasicNameValuePair("indvdlinfo_view_agre_yn_c", "Y"));
+        param.add(new BasicNameValuePair("snsTokenMessage", "%EC%A0%95%EC%9D%98%ED%95%84%EC%9A%94"));
+        param.add(new BasicNameValuePair("chkNotSelectedYn", "N"));
+        param.add(new BasicNameValuePair("evade_yn_c", "N"));
+        param.add(new BasicNameValuePair("evade_target_v", ""));
+        param.add(new BasicNameValuePair("evade_reason_v", ""));
+        param.add(new BasicNameValuePair("trafic_violtn_yn_c", ""));
+        param.add(new BasicNameValuePair("vhcle_no_v", "TEST Vehicle"));
+        param.add(new BasicNameValuePair("police_peti_gubun_c", "100"));
+        //?
+        param.add(new BasicNameValuePair("add_vhcle_no_v", ""));
+        param.add(new BasicNameValuePair("search_vhcle_no_yn", "N"));
+        param.add(new BasicNameValuePair("birthdoayMenuOpt", "Y"));
         break;
       default :
         break;
@@ -292,363 +505,5 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
 
     return param;
-  }
-
-
-  private class ReportData {
-    String mediaTag;
-    byte [] mediaSource;
-    ArrayList<NameValuePair> param;
-    ReportData(ArrayList<NameValuePair> param, String mediaTag, byte [] mediaSource) {
-      this.mediaTag = mediaTag;
-      this.mediaSource = mediaSource;
-      this.param = param;
-    }
-  }
-
-  public class ReportUploadPostTask extends AsyncTask<ReportData, Void, String> {
-    String url;
-    String fileName;
-    byte [] imageData;
-    ArrayList<NameValuePair> param;
-    Web_PostTransaction transaction;
-
-    ReportUploadPostTask(String url) {
-      this.url = url;
-      transaction = new Web_PostTransaction(url);
-    }
-
-    @Override
-    protected String doInBackground(ReportData... params) {
-      Boolean isSuccess;
-
-      // Todo
-      ReportData data = params[0];
-
-      isSuccess = transaction.send(data.param, data.mediaSource, data.mediaTag);
-      if (isSuccess) {
-        final HttpEntity entity = transaction.getResponse().getEntity();
-        try {
-          String responseBody = EntityUtils.toString(entity);
-          return responseBody;
-        } catch (Exception e) {
-          Log.d(ID_REPORT_WRITE_QUERY, e.toString());
-          e.printStackTrace();
-        }
-      }
-      return null;
-    }
-  }
-
-
-  /* TODO: should be sync */
-  public class ReportWriteTask extends AsyncTask<Void, Void, String> {
-
-
-    //private boolean
-
-
-    @Override
-    protected String doInBackground(Void... not_used) {
-      Boolean isSuccess;
-      Web_PostTransaction postTransaction;
-      ArrayList<NameValuePair> param;
-
-      //////////////////////////////////////////////////////////////////////////////////////////
-      //
-      final String fileUploadUrl = "https://www.epeople.go.kr/applex_wdigm/applet/jsp/fileup_cu_real.jsp";
-      if (bitMapData == null) {
-        Toast.makeText(getApplicationContext(), "사진/동영상이 첨부되지 않았습니다.", Toast.LENGTH_SHORT);
-        return null;
-      }
-
-      // send a packet
-      Log.d(ID_REPORT_WRITE_QUERY, "Upload media files");
-      postTransaction = new Web_PostTransaction(fileUploadUrl);
-      param = getPredefinedParam(PostReqType.FILE_UPLOAD);
-      isSuccess = postTransaction.send(param, bitMapData, "item_file[]");
-      if (isSuccess == false) {
-        Toast.makeText(getApplicationContext(), "사진/동영상 업로드에 실패했습니다.", Toast.LENGTH_SHORT);
-        return null;
-      }
-
-
-      //////////////////////////////////////////////////////////////////////////////////////////
-      //
-      final String content1Url = "https://www.epeople.go.kr/jsp/user/pc/cvreq/UPcRecommendOrg.jsp";
-      Log.d(ID_REPORT_WRITE_QUERY, "Upload contents - 1");
-      postTransaction = new Web_PostTransaction(content1Url);
-
-      // send a packet with a parameter
-      param = getPredefinedParam(PostReqType.UPCRECORG_REQ1);
-      isSuccess = postTransaction.send(param, bitMapData, "file1");
-      if (isSuccess) {
-        final HttpEntity entity = postTransaction.getResponse().getEntity();
-        try {
-          String responseBody = EntityUtils.toString(entity);
-          // [HACK] Response is arrived but server sent error because of wrong request. Server sent
-          // message "정상적인 접근이 아닙니다" in response body.
-          if (responseBody.length() < 500) {
-            Log.d(ID_REPORT_WRITE_QUERY, "Abnormal access (UPCRECORG_REQ1)");
-            return responseBody;
-          }
-          else {
-
-          }
-          return responseBody;
-
-        } catch (Exception e) {
-          Log.d(ID_REPORT_WRITE_QUERY, e.toString());
-          e.printStackTrace();
-        }
-      }
-
-      return null;
-    }
-
-
-    //Document doc = Jsoup.parse(responseBody);
-    //Elements reportListTable = doc.select("td");
-
-    protected void onPostExecute(final String responseBody) {
-      Log.d(ID_REPORT_WRITE_QUERY, responseBody);
-      Log.d(ID_REPORT_WRITE_QUERY, "#############");
-      //new ReportWriteTask_Mid().execute();
-
-    }
-  }
-
-
-  /* TODO: this task should be not async but sync */
-  public class UploadFile extends AsyncTask<Void, Void, String> {
-    @Override
-    protected String doInBackground(Void... not_used) {
-      return null;
-    }
-    protected void onPostExecute(final String responseBody) {
-      Log.d(ID_REPORT_WRITE_QUERY, responseBody);
-
-    }
-  }
-
-  public class ReportWriteTask_Mid extends AsyncTask<Void, Void, String> {
-    @Override
-    protected String doInBackground(Void... not_used) {
-      final String url = "https://www.epeople.go.kr/onto/manager/OntoUpAncCode.jsp";
-      Boolean isSuccess;
-      Web_PostTransaction postTransaction;
-      ArrayList<NameValuePair> param;
-
-      Log.d(ID_REPORT_WRITE_QUERY, "start mid report");
-
-      SystemClock.sleep(2000);
-
-      param = new ArrayList<NameValuePair>();
-      param.add(new BasicNameValuePair("ADR1_V", "서울특별시 서초구"));
-      param.add(new BasicNameValuePair("PETI_TITLE_V", "테스트 - 제목"));
-      param.add(new BasicNameValuePair("PETI_REASON_L", "테스트 - 내용"));
-      //FIXME
-      param.add(new BasicNameValuePair("PETI_DOCUMENT", "13900000;sample_image.jpg;"));
-      //
-      param.add(new BasicNameValuePair("PM_FLAG", "80030001"));
-
-      // send a packet
-      postTransaction = new Web_PostTransaction(url);
-      isSuccess = postTransaction.send(param);
-      if (isSuccess) {
-        final HttpEntity entity = postTransaction.getResponse().getEntity();
-        try {
-          return EntityUtils.toString(entity);
-        } catch (Exception e) {
-          Log.d(ID_REPORT_WRITE_QUERY, e.toString());
-          e.printStackTrace();
-        }
-      }
-      return "ERROR";
-    }
-    @Override
-    protected void onPostExecute(final String responseBody) {
-        Log.d(ID_REPORT_WRITE_QUERY, responseBody);
-        Log.d(ID_REPORT_WRITE_QUERY, "#############");
-      new ReportWriteTask_Final().execute();
-    }
-  }
-
-  /* TODO: should be sync */
-  public class ReportWriteTask_Final extends AsyncTask<Void, Void, String> {
-
-    @Override
-    protected String doInBackground(Void... not_used) {
-      final String url = "https://www.epeople.go.kr/jsp/user/pc/cvreq/UPcRecommendOrg.jsp";
-      Boolean isSuccess;
-      Web_PostTransaction postTransaction;
-      ArrayList<NameValuePair> param;
-
-      Log.d(ID_REPORT_WRITE_QUERY, "start final report");
-
-      SystemClock.sleep(2000);
-
-
-      // parameter
-      param = new ArrayList<NameValuePair>();
-      //param.add(new BasicNameValuePair("third_person_sup_yn_c",	"Y"));
-      /* FIXME: conversion byte to string is so dangerous */
-      param.add(new BasicNameValuePair("mode", "createPcCvreq"));
-      param.add(new BasicNameValuePair("flag", "null"));
-      param.add(new BasicNameValuePair("detailView", "Y"));
-      param.add(new BasicNameValuePair("menuGubun", "0"));
-      param.add(new BasicNameValuePair("menu1"	, "pc"));
-      param.add(new BasicNameValuePair("peti_no_c", ""));
-      param.add(new BasicNameValuePair("mem_id_v", "mmyjh86"));
-      param.add(new BasicNameValuePair("anc_code_v", "1320000"));
-      param.add(new BasicNameValuePair("civil_again_c", "00600001"));
-      param.add(new BasicNameValuePair("sect_error_yn_c", "Y"));
-      param.add(new BasicNameValuePair("p_sect_error_yn_c", "Y"));
-      param.add(new BasicNameValuePair("peti_path_gubun_c", "00020011"));
-      param.add(new BasicNameValuePair("peter_name_v"	, "유종훈"));
-      param.add(new BasicNameValuePair("mem_native_yn_c", ""));
-      param.add(new BasicNameValuePair("zipcode_c", "06762"));
-      param.add(new BasicNameValuePair("adr1_v", "서울특별시 서초구 바우뫼로11길 76,"));
-      param.add(new BasicNameValuePair("adr2_v", "104호"));
-      param.add(new BasicNameValuePair("peti_job_c", ""));
-      param.add(new BasicNameValuePair("tel_no_v", ""));
-      param.add(new BasicNameValuePair("cel_no_v", ""));
-      param.add(new BasicNameValuePair("email_v", "mmyjh86@gmail.com"));
-      param.add(new BasicNameValuePair("open_yn_c", "N"));
-      param.add(new BasicNameValuePair("peti_title_v", "테스트 - 제목"));
-      param.add(new BasicNameValuePair("peti_reason_l", "테스트 - 내용"));
-      param.add(new BasicNameValuePair("peti_nti_method_c", "00570003"));
-      param.add(new BasicNameValuePair("passwd_v", ""));
-      param.add(new BasicNameValuePair("civil_rel_name_v", ""));
-      param.add(new BasicNameValuePair("civil_rel_tel_no_v", ""));
-      param.add(new BasicNameValuePair("civil_rel_zipcode_c", ""));
-      param.add(new BasicNameValuePair("civil_rel_addr_v", ""));
-      param.add(new BasicNameValuePair("civil_rel_addr1_v", ""));
-      param.add(new BasicNameValuePair("file1_name",	"sample_image.jpg"));
-      param.add(new BasicNameValuePair("file2_name", ""));
-      param.add(new BasicNameValuePair("file3_name", ""));
-      param.add(new BasicNameValuePair("file4_name", ""));
-      param.add(new BasicNameValuePair("file5_name", ""));
-      param.add(new BasicNameValuePair("file1_size", "153240"));
-      param.add(new BasicNameValuePair("file2_size", ""));
-      param.add(new BasicNameValuePair("file3_size", ""));
-      param.add(new BasicNameValuePair("file4_size", ""));
-      param.add(new BasicNameValuePair("file5_size", ""));
-      //FIXME - 날짜별로 업로드 경로가 다름
-      param.add(new BasicNameValuePair("file1", "/attach04/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
-      param.add(new BasicNameValuePair("file2"	, ""));
-      param.add(new BasicNameValuePair("file3", ""));
-      param.add(new BasicNameValuePair("file4", ""));
-      param.add(new BasicNameValuePair("file5", ""));
-      //FIXME - 날짜별로 업로드 경로가 다름
-      param.add(new BasicNameValuePair("file1_dir", "/attach04/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/"));
-      param.add(new BasicNameValuePair("file2_dir", ""));
-      param.add(new BasicNameValuePair("file3_dir", ""));
-      param.add(new BasicNameValuePair("file4_dir", ""));
-      param.add(new BasicNameValuePair("file5_dir", ""));
-      //FIXME - 날짜별로 업로드 경로가 다름
-      param.add(new BasicNameValuePair("file1_temp_dir", "/attach04/temp/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
-      param.add(new BasicNameValuePair("file2_temp_dir", ""));
-      param.add(new BasicNameValuePair("file3_temp_dir", ""));
-      param.add(new BasicNameValuePair("file4_temp_dir", ""));
-      param.add(new BasicNameValuePair("file5_temp_dir", ""));
-      param.add(new BasicNameValuePair("open_chk_c", ""));
-      param.add(new BasicNameValuePair("grp3_peti_yn_c", "N"));
-      param.add(new BasicNameValuePair("grp_name", ""));
-      param.add(new BasicNameValuePair("mail_attch_yn_c", "Y"));
-      param.add(new BasicNameValuePair("anc_c2", "1140100"));
-      param.add(new BasicNameValuePair("auto_anc_v", "1140100"));
-      param.add(new BasicNameValuePair("peti_anc_v", "1320000"));
-      param.add(new BasicNameValuePair("pre_peti_no_c", ""));
-      param.add(new BasicNameValuePair("miss_yn_c", "N"));
-      param.add(new BasicNameValuePair("peti_ip_v", "124.53.50.34"));
-      param.add(new BasicNameValuePair("anc_name_v", "경찰청"));
-      param.add(new BasicNameValuePair("multi_anc_yn_c", "N"));
-      param.add(new BasicNameValuePair("org_auto_anc_c", "1140100"));
-      param.add(new BasicNameValuePair("multi_status_c", ""));
-      param.add(new BasicNameValuePair("ombuds", ""));
-      param.add(new BasicNameValuePair("org_civil_again_c", ""));
-      param.add(new BasicNameValuePair("manual_acrc_yn_c", "N"));
-      param.add(new BasicNameValuePair("manual_yn_c", "Y"));
-      param.add(new BasicNameValuePair("auto_yn_c", "N"));
-      param.add(new BasicNameValuePair("upAncCode", "1140100"));
-      param.add(new BasicNameValuePair("seq_n", ""));
-      param.add(new BasicNameValuePair("retFAQ", "0"));
-      param.add(new BasicNameValuePair("occurrence_area", ""));
-      param.add(new BasicNameValuePair("subOrg", "6110000"));
-      param.add(new BasicNameValuePair("basicOrg", "3210000"));
-      param.add(new BasicNameValuePair("occurrence_same_addr", "Y"));
-      param.add(new BasicNameValuePair("corp_no_c", ""));
-      param.add(new BasicNameValuePair("corp_name_v", ""));
-      param.add(new BasicNameValuePair("fOpenYn", "N"));
-      //FIXME : 파일 아이디 받아오는 부분을 모르겠음
-      //바로 전 리퀘스트에 쓰이는 부분임
-      param.add(new BasicNameValuePair("file1_id", "13700034"));
-      //
-      param.add(new BasicNameValuePair("file2_id"	, ""));
-      param.add(new BasicNameValuePair("file3_id", ""));
-      param.add(new BasicNameValuePair("file4_id", ""));
-      param.add(new BasicNameValuePair("file5_id", ""));
-      param.add(new BasicNameValuePair("mypeti_view_method_c", "1"));
-      param.add(new BasicNameValuePair("scode", "116504163196"));
-      param.add(new BasicNameValuePair("jgubun", "1"));
-      param.add(new BasicNameValuePair("cvpl_se_c", "80030001"));
-      param.add(new BasicNameValuePair("dmge_aplcnt_nm_v", ""));
-      param.add(new BasicNameValuePair("dmge_wrkplc_v", ""));
-      param.add(new BasicNameValuePair("dmge_adr1_v", ""));
-      param.add(new BasicNameValuePair("dmge_tel_no_v", ""));
-      param.add(new BasicNameValuePair("jumin_no_c", ""));
-      param.add(new BasicNameValuePair("dupInfo", ""));
-      param.add(new BasicNameValuePair("third_person_sup_yn_c", "Y"));
-      param.add(new BasicNameValuePair("hPersonallykind", ""));
-      param.add(new BasicNameValuePair("evadeTargerCode", ""));
-      param.add(new BasicNameValuePair("evadeTargerCode1", ""));
-      param.add(new BasicNameValuePair("evadeReasonFocusChk", ""));
-      param.add(new BasicNameValuePair("primary_anc_code_v", ""));
-      param.add(new BasicNameValuePair("proc_rcv_yn_c", "N"));
-      param.add(new BasicNameValuePair("prv_flag", ""));
-      param.add(new BasicNameValuePair("ancCheck", ""));
-      param.add(new BasicNameValuePair("corp_no_c1", ""));
-      param.add(new BasicNameValuePair("corp_no_c2", ""));
-      param.add(new BasicNameValuePair("corp_no_c3", ""));
-      param.add(new BasicNameValuePair("consent_yn", ""));
-      param.add(new BasicNameValuePair("onto_use_yn", "0"));
-      param.add(new BasicNameValuePair("safe_civil_rate", ""));
-      param.add(new BasicNameValuePair("better_civil_rate", ""));
-      param.add(new BasicNameValuePair("accuse_yn_c", "N"));
-      param.add(new BasicNameValuePair("indvdlinfo_view_agre_yn_c", "Y"));
-      param.add(new BasicNameValuePair("snsTokenMessage", "%EC%A0%95%EC%9D%98%ED%95%84%EC%9A%94"));
-      param.add(new BasicNameValuePair("chkNotSelectedYn", "N"));
-      param.add(new BasicNameValuePair("evade_yn_c", "N"));
-      param.add(new BasicNameValuePair("evade_target_v", ""));
-      param.add(new BasicNameValuePair("evade_reason_v", ""));
-      param.add(new BasicNameValuePair("trafic_violtn_yn_c", ""));
-      param.add(new BasicNameValuePair("vhcle_no_v", "TEST Vehicle"));
-      param.add(new BasicNameValuePair("police_peti_gubun_c", "100"));
-      //?
-      param.add(new BasicNameValuePair("add_vhcle_no_v", ""));
-      param.add(new BasicNameValuePair("search_vhcle_no_yn", "N"));
-      param.add(new BasicNameValuePair("birthdoayMenuOpt", "Y"));
-
-
-
-      // send a packet
-      postTransaction = new Web_PostTransaction(url);
-      isSuccess = postTransaction.send(param, bitMapData, "");
-      if (isSuccess) {
-        final HttpEntity entity = postTransaction.getResponse().getEntity();
-        try {
-          return EntityUtils.toString(entity);
-        } catch (Exception e) {
-          Log.d(ID_REPORT_WRITE_QUERY, e.toString());
-          e.printStackTrace();
-        }
-      }
-      return null;
-    }
-    protected void onPostExecute(final String responseBody) {
-      Log.d(ID_REPORT_WRITE_QUERY, responseBody);
-      Log.d(ID_REPORT_WRITE_QUERY, "#############");
-    }
   }
 }
