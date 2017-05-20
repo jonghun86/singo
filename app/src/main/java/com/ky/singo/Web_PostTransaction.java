@@ -45,9 +45,10 @@ public class Web_PostTransaction {
         builder.addPart(nvp.getName(), new StringBody(nvp.getValue(), Charset.forName("EUC-KR")));
       }
 
-      ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
-      builder.addPart(test, bab);
-
+      if (!test.equals("")) {
+        ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
+        builder.addPart(test, bab);
+      }
       // Send a packet
       HttpClient httpClient = new DefaultHttpClient();
       httpPost.setEntity(builder.build());
