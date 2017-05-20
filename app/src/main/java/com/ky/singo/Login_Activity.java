@@ -100,7 +100,7 @@ public class Login_Activity extends AppCompatActivity implements LoaderCallbacks
     //////////////////////////////////////////////////////////////////////////////////
     // To be removed...
     // For test
-    mAuthTask = new UserLoginTask("-", "-");
+    mAuthTask = new UserLoginTask("mmyjh86", "2qnsrl.dkagh");
     mAuthTask.execute((Void) null);
     //////////////////////////////////////////////////////////////////////////////////
   }
