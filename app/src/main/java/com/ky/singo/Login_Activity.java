@@ -132,7 +132,7 @@ public class Login_Activity extends AppCompatActivity {
       }
       else {
         Log.d(ID_USER_LOGIN, "Failed to send transaction");
-        Toast.makeText(getApplicationContext(), "Unknown error", Toast.LENGTH_SHORT);
+        Toast.makeText(getApplicationContext(), "Unknown error", Toast.LENGTH_SHORT).show();
       }
     }
   }
