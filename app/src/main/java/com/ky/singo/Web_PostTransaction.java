@@ -46,6 +46,7 @@ public class Web_PostTransaction {
       }
 
       if (!test.equals("")) {
+        Log.d(TRANSACTION, "IMAGE_EXIST");
         ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
         builder.addPart(test, bab);
       }

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -316,12 +317,14 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       Log.d(ID_REPORT_WRITE_QUERY, "start mid report");
 
+      SystemClock.sleep(2000);
+
       param = new ArrayList<NameValuePair>();
       param.add(new BasicNameValuePair("ADR1_V", "서울특별시 서초구"));
       param.add(new BasicNameValuePair("PETI_TITLE_V", "테스트 - 제목"));
       param.add(new BasicNameValuePair("PETI_REASON_L", "테스트 - 내용"));
       //FIXME
-      param.add(new BasicNameValuePair("PETI_DOCUMENT", "13700034;sample_image.jpg"));
+      param.add(new BasicNameValuePair("PETI_DOCUMENT", "13900000;sample_image.jpg;"));
       //
       param.add(new BasicNameValuePair("PM_FLAG", "80030001"));
 
@@ -358,6 +361,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
       ArrayList<NameValuePair> param;
 
       Log.d(ID_REPORT_WRITE_QUERY, "start final report");
+
+      SystemClock.sleep(2000);
 
 
       // parameter
