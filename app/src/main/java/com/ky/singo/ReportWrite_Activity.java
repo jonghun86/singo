@@ -18,6 +18,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -27,9 +30,10 @@ import java.util.ArrayList;
  */
 
 public class ReportWrite_Activity extends AppCompatActivity {
-  final String fileUploadUrl = "https://www.epeople.go.kr/applex_wdigm/applet/jsp/fileup_cu_real.jsp";
+  final String fileUploadUrl    = "https://www.epeople.go.kr/applex_wdigm/applet/jsp/fileup_cu_real.jsp";
   final String contentUploadUrl = "https://www.epeople.go.kr/jsp/user/pc/cvreq/UPcRecommendOrg.jsp";
   final String summaryUploadUrl = "https://www.epeople.go.kr/onto/ajax/ajax_onto_recommand_req.jsp";
+  final String dupInfoUrl       = "http://www.epeople.go.kr/jsp/user/pc/cvreq/UPcCvreqForm.jsp";
 
   private final String ID_REPORT_WRITE_QUERY = "REPORT_WRITE";
   private static final int SELECT_PICTURE = 1;
@@ -41,6 +45,13 @@ public class ReportWrite_Activity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     Log.d(ID_REPORT_WRITE_QUERY, "onCreate");
     setContentView(R.layout.reportwrite);
+
+    // to be removed
+    // for fast debug
+    Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample_image);
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+    bitMapData = stream.toByteArray();
 
     Button reportViolationButton = (Button) findViewById(R.id.report_button);
     reportViolationButton.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +104,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
   private boolean ReportViolation() {
     ReportUploadPostTask uploadTask;
+    ReportUploadGetTask uploadGetTask;
     ArrayList<NameValuePair> param;
     ReportData reportData;
     String responseBody;
@@ -107,6 +119,16 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
 
     try {
+      uploadGetTask = new ReportUploadGetTask(dupInfoUrl);
+      param = new ArrayList<NameValuePair>();
+      param.add(new BasicNameValuePair("flag", "N"));
+      reportData = new ReportData(param, null, null);
+      responseBody  = uploadGetTask.execute(reportData).get();
+
+      Document doc = Jsoup.parse(responseBody);
+      Element dupInfo = doc.select("input[name=dupInfo]").first();
+      Log.d("##", dupInfo.attr("value"));
+
       /////////////////////////////////////////////////////////////////////////////////////////////
       // Upload Video Files
       uploadTask    = new ReportUploadPostTask(fileUploadUrl);
@@ -121,9 +143,10 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
-      uploadTask    = new ReportUploadPostTask(contentUploadUrl);
       param         = getPredefinedParam(PostReqType.CONTENTS_REQUEST);
       reportData    = new ReportData(param, "file1", bitMapData);
+
+      uploadTask    = new ReportUploadPostTask(contentUploadUrl);
       responseBody  = uploadTask.execute(reportData).get();
       // [HACK] Response is arrived but server sent error because of wrong request. Server sent
       // message "정상적인 접근이 아닙니다" in response body.
@@ -133,6 +156,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
           Toast.LENGTH_SHORT).show();
         return false;
       }
+
       /*
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
@@ -201,6 +225,36 @@ public class ReportWrite_Activity extends AppCompatActivity {
       else {
         isSuccess = transaction.send(data.param, data.mediaSource, data.mediaTag);
       }
+      if (isSuccess) {
+        final HttpEntity entity = transaction.getResponse().getEntity();
+        try {
+          String responseBody = EntityUtils.toString(entity);
+          return responseBody;
+        } catch (Exception e) {
+          Log.d(ID_REPORT_WRITE_QUERY, e.toString());
+          e.printStackTrace();
+        }
+      }
+      return null;
+    }
+  }
+
+  public class ReportUploadGetTask extends AsyncTask<ReportData, Void, String> {
+    String url;
+    Web_GetTransaction transaction;
+
+    ReportUploadGetTask(String url) {
+      this.url = url;
+      transaction = new Web_GetTransaction(url);
+    }
+
+    @Override
+    protected String doInBackground(ReportData... params) {
+      Boolean isSuccess;
+
+      // Todo
+      ReportData data = params[0];
+      isSuccess = transaction.send(data.param);
       if (isSuccess) {
         final HttpEntity entity = transaction.getResponse().getEntity();
         try {
