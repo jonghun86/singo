@@ -38,6 +38,10 @@ public class ReportWrite_Activity extends AppCompatActivity {
   final String summaryUploadUrl = "https://www.epeople.go.kr/onto/ajax/ajax_onto_recommand_req.jsp";
   final String dupInfoUrl       = "http://www.epeople.go.kr/jsp/user/pc/cvreq/UPcCvreqForm.jsp";
 
+  // TODO Remove global member variable
+  String fileId;
+
+
   private final String ID_REPORT_WRITE_QUERY = "REPORT_WRITE";
   private static final int SELECT_PICTURE = 1;
   private String selectedImagePath;
@@ -111,6 +115,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
     ArrayList<NameValuePair> param;
     ReportData reportData;
     String responseBody;
+    Document doc;
+    Element element;
 
     // 동영상 or 사진 첨부를 누락한 경우
     if (bitMapData == null) {
@@ -128,9 +134,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
       reportData = new ReportData(param, null, null);
       responseBody  = uploadGetTask.execute(reportData).get();
 
-      Document doc = Jsoup.parse(responseBody);
-      Element dupInfo = doc.select("input[name=dupInfo]").first();
-      Log.d("##", dupInfo.attr("value"));
+      doc = Jsoup.parse(responseBody);
+      element = doc.select("input[name=dupInfo]").first();
+      Log.d("##", element.attr("value"));
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       // Upload Video Files
@@ -160,7 +166,11 @@ public class ReportWrite_Activity extends AppCompatActivity {
         return false;
       }
 
-      /*
+      doc = Jsoup.parse(responseBody);
+      element = doc.select("input[name=fileId]").first();
+      fileId = element.attr("value");
+      Log.d("##", element.attr("value"));
+
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
       uploadTask    = new ReportUploadPostTask(summaryUploadUrl);
@@ -184,7 +194,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "########",
           Toast.LENGTH_SHORT).show();
         return false;
-      }     */
+      }    /* */
       Log.d("----2", responseBody);
 
 
@@ -460,19 +470,19 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("file4_size", ""));
         param.add(new BasicNameValuePair("file5_size", ""));
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add(new BasicNameValuePair("file1", "/attach04/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
+        param.add(new BasicNameValuePair("file1", "/attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
         param.add(new BasicNameValuePair("file2"	, ""));
         param.add(new BasicNameValuePair("file3", ""));
         param.add(new BasicNameValuePair("file4", ""));
         param.add(new BasicNameValuePair("file5", ""));
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add(new BasicNameValuePair("file1_dir", "/attach04/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/"));
+        param.add(new BasicNameValuePair("file1_dir", "/attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/"));
         param.add(new BasicNameValuePair("file2_dir", ""));
         param.add(new BasicNameValuePair("file3_dir", ""));
         param.add(new BasicNameValuePair("file4_dir", ""));
         param.add(new BasicNameValuePair("file5_dir", ""));
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add(new BasicNameValuePair("file1_temp_dir", "/attach04/temp/2017/5/20/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
+        param.add(new BasicNameValuePair("file1_temp_dir", "/attach04/temp/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
         param.add(new BasicNameValuePair("file2_temp_dir", ""));
         param.add(new BasicNameValuePair("file3_temp_dir", ""));
         param.add(new BasicNameValuePair("file4_temp_dir", ""));
@@ -508,7 +518,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("fOpenYn", "N"));
         //FIXME : 파일 아이디 받아오는 부분을 모르겠음
         //바로 전 리퀘스트에 쓰이는 부분임
-        param.add(new BasicNameValuePair("file1_id", "13700034"));
+        param.add(new BasicNameValuePair("fileId", fileId));
         //
         param.add(new BasicNameValuePair("file2_id"	, ""));
         param.add(new BasicNameValuePair("file3_id", ""));
