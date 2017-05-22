@@ -1,4 +1,4 @@
-package com.ky.singo;
+package com.ky.singo.transaction;
 
 /**
  * Created by mmyjh on 2017-04-25.

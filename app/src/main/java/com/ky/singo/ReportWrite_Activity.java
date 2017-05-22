@@ -14,6 +14,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.ky.singo.transaction.Web_GetTransaction;
+import com.ky.singo.transaction.Web_PostTransaction;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
