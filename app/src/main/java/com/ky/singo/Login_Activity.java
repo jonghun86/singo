@@ -27,7 +27,7 @@ public class Login_Activity extends AppCompatActivity {
   /**
    * String to identity log message
    */
-  private final String ID_USER_LOGIN = "LOGIN";
+  private final String ID_USER_LOGIN = "SINGO_LOGIN";
 
   /**
    * Keep track of the login task to ensure we can cancel it if requested.

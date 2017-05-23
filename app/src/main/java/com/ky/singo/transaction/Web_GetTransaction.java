@@ -5,12 +5,11 @@ import android.util.Log;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by mmyjh on 2017-05-20.
@@ -27,7 +26,7 @@ public class Web_GetTransaction {
     baseUrl = url;
   }
 
-  public boolean send(ArrayList<NameValuePair> param) {
+  public boolean send(Web_Param param) {
     int status;
     String urlWithParam = baseUrl;
     Web_Cookie  cookie = Web_Cookie .getInstance();
@@ -36,9 +35,11 @@ public class Web_GetTransaction {
       // Send a packet
       HttpClient httpClient = new DefaultHttpClient();
 
-      for (NameValuePair nvp : param) {
-        urlWithParam += "?" + nvp.getName() + "=" + nvp.getValue() + "&";
+      // include text body
+      for (Map.Entry<String, String> elem : param.getTextEntry()) {
+        urlWithParam += "?" + elem.getKey() + "=" + elem.getValue() + "&";
       }
+
       Log.d(TRANSACTION, "Try to send to " + urlWithParam);
       Log.d(TRANSACTION, "Try to send with cookie " + cookie.getKey());
 
@@ -64,10 +65,10 @@ public class Web_GetTransaction {
       }
     } catch (Exception e) {
       // For debug
-      for (NameValuePair pair : param) {
-        Log.d(TRANSACTION, "EXCEPTION : " + pair.getName() + " : " + pair.getValue());
-        return false;
+      for (Map.Entry<String, String> elem : param.getTextEntry()) {
+        Log.d(TRANSACTION, "EXCEPTION : " + elem.getKey() + " : " + elem.getValue());
       }
+      return false;
     }
     return true;
   }

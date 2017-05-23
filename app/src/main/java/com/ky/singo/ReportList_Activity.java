@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ReportList_Activity extends AppCompatActivity {
-  private final String ID_REPORT_LIST_QUERY = "REPORT_LIST";
+  private final String ID_REPORT_LIST_QUERY = "SINGO_REPORT_LIST";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

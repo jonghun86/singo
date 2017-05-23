@@ -22,7 +22,6 @@ import com.ky.singo.transaction.Web_PostTransaction;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -46,7 +45,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
   final String fileUploadUrl    = "https://www.epeople.go.kr/applex_wdigm/applet/jsp/fileup_cu_real.jsp";
   final String contentUploadUrl = "https://www.epeople.go.kr/jsp/user/pc/cvreq/UPcRecommendOrg.jsp";
   final String summaryUploadUrl = "https://www.epeople.go.kr/onto/ajax/ajax_onto_recommand_req.jsp";
-  final String dupInfoUrl       = "http://www.epeople.go.kr/jsp/user/pc/cvreq/UPcCvreqForm.jsp";
+  final String userInfoReqUrl   = "http://www.epeople.go.kr/jsp/user/pc/cvreq/UPcCvreqForm.jsp";
 
   // TODO Remove global member variable
   String fileId;
@@ -59,7 +58,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
   private EditText vehicleEditText;
   private ProgressBar progressBar;
 
-  private final String ID_REPORT_WRITE_QUERY = "REPORT_WRITE";
+  private final String ID_REPORT_WRITE_QUERY = "SINGO_REPORT_WRITE";
   private static final int SELECT_PICTURE = 1;
   private String selectedImagePath;
   byte[] bitMapData;
@@ -141,7 +140,6 @@ public class ReportWrite_Activity extends AppCompatActivity {
     ReportUploadPostTask uploadTask;
     ReportUploadGetTask uploadGetTask;
     ArrayList<NameValuePair> param;
-    ReportData reportData;
     Web_Param webParam;
     String responseBody;
     Document doc;
@@ -157,11 +155,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
 
     try {
-      uploadGetTask = new ReportUploadGetTask(dupInfoUrl);
-      param = new ArrayList<NameValuePair>();
-      param.add(new BasicNameValuePair("flag", "N"));
-      reportData = new ReportData(param, null, null);
-      responseBody  = uploadGetTask.execute(reportData).get();
+      uploadGetTask = new ReportUploadGetTask(userInfoReqUrl);
+      webParam      = getPredefinedParam(PostReqType.USERDATA_REQUEST);
+      responseBody  = uploadGetTask.execute(webParam).get();
 
       doc = Jsoup.parse(responseBody);
       elements = doc.select("input"); //
@@ -242,17 +238,6 @@ public class ReportWrite_Activity extends AppCompatActivity {
   }
 
 
-  private class ReportData {
-    String mediaTag;
-    byte [] mediaSource;
-    ArrayList<NameValuePair> param;
-    ReportData(ArrayList<NameValuePair> param, String mediaTag, byte [] mediaSource) {
-      this.mediaTag = mediaTag;
-      this.mediaSource = mediaSource;
-      this.param = param;
-    }
-  }
-
   public class ReportUploadPostTask extends AsyncTask<Web_Param, Void, String> {
     String url;
     Web_PostTransaction transaction;
@@ -295,7 +280,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
     }
   }
 
-  public class ReportUploadGetTask extends AsyncTask<ReportData, Void, String> {
+  public class ReportUploadGetTask extends AsyncTask<Web_Param, Void, String> {
     String url;
     Web_GetTransaction transaction;
 
@@ -317,12 +302,12 @@ public class ReportWrite_Activity extends AppCompatActivity {
     }
 
     @Override
-    protected String doInBackground(ReportData... params) {
+    protected String doInBackground(Web_Param... params) {
       Boolean isSuccess;
 
       // Todo
-      ReportData data = params[0];
-      isSuccess = transaction.send(data.param);
+      Web_Param param = params[0];
+      isSuccess = transaction.send(param);
       if (isSuccess) {
         final HttpEntity entity = transaction.getResponse().getEntity();
         try {
@@ -340,6 +325,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
   public enum PostReqType {
     // FIXME : 이름 바꿀것
+    USERDATA_REQUEST,
     MULTIMEDIA_UPLOAD,
     CONTENTS_REQUEST,
     CONTENTS_SUMMARY,
@@ -350,6 +336,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
     Web_Param param = new Web_Param();
 
     switch (type) {
+      case USERDATA_REQUEST:
+        param.add("flag", "N");;
+        break;
       case MULTIMEDIA_UPLOAD:
         param.add("item_file[]", bitMapData);
         break;
