@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ky.singo.transaction.Web_GetTransaction;
@@ -27,6 +26,7 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -143,7 +143,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
     ReportData reportData;
     String responseBody;
     Document doc;
-    Element element;
+    Elements elements;
 
     // 동영상 or 사진 첨부를 누락한 경우
     if (bitMapData == null) {
@@ -162,8 +162,18 @@ public class ReportWrite_Activity extends AppCompatActivity {
       responseBody  = uploadGetTask.execute(reportData).get();
 
       doc = Jsoup.parse(responseBody);
-      element = doc.select("input[name=dupInfo]").first();
-      Log.d("##", element.attr("value"));
+      elements = doc.select("input"); //
+      for (Element element : elements) {
+        // peter_name_v
+        // (userName)       : 민원인 이름
+        // memId (mem_id_v) : 민원인 ID
+        // juso2Anc_Sub     : 주소 코드1 (경기도)
+        // juso2Anc_Basic   : 주소 코드2 (광명시)
+        // adr1_v           : 주소 1 경기도 광명시 시청로 139,
+        // adr2_v           : 주소 2 우성아파트 101-201
+        // peter_cel_no_v2  : 핸드폰 가운데자리
+        Log.d("####", element.attr("name") + " : " + element.attr("value"));
+      }
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       // Upload Video Files
@@ -194,7 +204,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       }
 
       doc = Jsoup.parse(responseBody);
-      element = doc.select("input[name=file1_id]").first();
+      Element element = doc.select("input[name=file1_id]").first();
       fileId = element.attr("value");
       Log.d("##", element.attr("value"));
 
