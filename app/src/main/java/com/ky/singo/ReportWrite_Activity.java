@@ -167,7 +167,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       }
 
       doc = Jsoup.parse(responseBody);
-      element = doc.select("input[name=fileId]").first();
+      element = doc.select("input[name=file1_id]").first();
       fileId = element.attr("value");
       Log.d("##", element.attr("value"));
 
@@ -518,7 +518,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("fOpenYn", "N"));
         //FIXME : 파일 아이디 받아오는 부분을 모르겠음
         //바로 전 리퀘스트에 쓰이는 부분임
-        param.add(new BasicNameValuePair("fileId", fileId));
+        param.add(new BasicNameValuePair("file1_id", fileId));
         //
         param.add(new BasicNameValuePair("file2_id"	, ""));
         param.add(new BasicNameValuePair("file3_id", ""));
