@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.ky.singo.transaction.Web_GetTransaction;
+import com.ky.singo.transaction.Web_Param;
 import com.ky.singo.transaction.Web_PostTransaction;
 
 import org.apache.http.HttpEntity;
@@ -141,6 +142,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
     ReportUploadGetTask uploadGetTask;
     ArrayList<NameValuePair> param;
     ReportData reportData;
+    Web_Param webParam;
     String responseBody;
     Document doc;
     Elements elements;
@@ -178,9 +180,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
       /////////////////////////////////////////////////////////////////////////////////////////////
       // Upload Video Files
       uploadTask    = new ReportUploadPostTask(fileUploadUrl);
-      param         = getPredefinedParam(PostReqType.MULTIMEDIA_UPLOAD);
-      reportData    = new ReportData(param, "item_file[]", bitMapData);
-      responseBody  = uploadTask.execute(reportData).get();
+      webParam      = getPredefinedParam(PostReqType.MULTIMEDIA_UPLOAD);
+      responseBody  = uploadTask.execute(webParam).get();
       if (responseBody == null) {
         Toast.makeText(getApplicationContext(), "사진/동영상 업로드에 실패했습니다.",
           Toast.LENGTH_SHORT).show();
@@ -189,11 +190,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
-      param         = getPredefinedParam(PostReqType.CONTENTS_REQUEST);
-      reportData    = new ReportData(param, "file1", bitMapData);
-
       uploadTask    = new ReportUploadPostTask(contentUploadUrl);
-      responseBody  = uploadTask.execute(reportData).get();
+      webParam      = getPredefinedParam(PostReqType.CONTENTS_REQUEST);
+      responseBody  = uploadTask.execute(webParam).get();
       // [HACK] Response is arrived but server sent error because of wrong request. Server sent
       // message "정상적인 접근이 아닙니다" in response body.
       if (responseBody.length() < 500) {
@@ -203,6 +202,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         return false;
       }
 
+      // FIXME
       doc = Jsoup.parse(responseBody);
       Element element = doc.select("input[name=file1_id]").first();
       fileId = element.attr("value");
@@ -211,9 +211,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
       uploadTask    = new ReportUploadPostTask(summaryUploadUrl);
-      param         = getPredefinedParam(PostReqType.CONTENTS_SUMMARY);
-      reportData    = new ReportData(param, null, null);
-      responseBody  = uploadTask.execute(reportData).get();
+      webParam      = getPredefinedParam(PostReqType.CONTENTS_SUMMARY);
+      responseBody  = uploadTask.execute(webParam).get();
       if (responseBody == null) {
         Toast.makeText(getApplicationContext(), "------------------.",
           Toast.LENGTH_SHORT).show();
@@ -223,15 +222,15 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
+
       uploadTask    = new ReportUploadPostTask(contentUploadUrl);
-      param         = getPredefinedParam(PostReqType.CONTENTS_WRITE);
-      reportData    = new ReportData(param, null, null);
-      responseBody  = uploadTask.execute(reportData).get();
+      webParam      = getPredefinedParam(PostReqType.CONTENTS_WRITE);
+      responseBody  = uploadTask.execute(webParam).get();
       if (responseBody == null) {
         Toast.makeText(getApplicationContext(), "########",
           Toast.LENGTH_SHORT).show();
         return false;
-      }    /* */
+      }
       Log.d("----2", responseBody);
 
 
@@ -254,7 +253,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
     }
   }
 
-  public class ReportUploadPostTask extends AsyncTask<ReportData, Void, String> {
+  public class ReportUploadPostTask extends AsyncTask<Web_Param, Void, String> {
     String url;
     Web_PostTransaction transaction;
 
@@ -276,17 +275,12 @@ public class ReportWrite_Activity extends AppCompatActivity {
     }
 
     @Override
-    protected String doInBackground(ReportData... params) {
+    protected String doInBackground(Web_Param... params) {
       Boolean isSuccess;
 
       // Todo
-      ReportData data = params[0];
-      if (data.mediaTag == null | data.mediaSource == null) {
-        isSuccess = transaction.send(data.param);
-      }
-      else {
-        isSuccess = transaction.send(data.param, data.mediaSource, data.mediaTag);
-      }
+      Web_Param param = params[0];
+      isSuccess = transaction.send(param);
       if (isSuccess) {
         final HttpEntity entity = transaction.getResponse().getEntity();
         try {
@@ -352,67 +346,70 @@ public class ReportWrite_Activity extends AppCompatActivity {
     CONTENTS_WRITE
   }
 
-  ArrayList<NameValuePair> getPredefinedParam (PostReqType type) {
-    ArrayList<NameValuePair> param = new ArrayList<NameValuePair>();
+  Web_Param getPredefinedParam (PostReqType type) {
+    Web_Param param = new Web_Param();
 
     switch (type) {
+      case MULTIMEDIA_UPLOAD:
+        param.add("item_file[]", bitMapData);
+        break;
       case CONTENTS_REQUEST:
         // -------------------------------------------------------------------------------------------
         // STEP 1. 신청서 작성 및 유사사례 확인
         // 개인정보 수집 및 이용 안내
-        param.add(new BasicNameValuePair("third_person_sup_yn_c",	"Y"));
+        param.add("third_person_sup_yn_c", "Y");
         // 신청인 본인인증
         //  - 개인 N, 단체 Y, 기업 C
         //  - 신청인 이름
-        param.add(new BasicNameValuePair("grp3_peti_yn_c",	"N"));
-        param.add(new BasicNameValuePair("userName",	nameEditText.getText().toString()));
+        param.add("grp3_peti_yn_c",	"N");
+        param.add("userName",	nameEditText.getText().toString());
         // 신청인 기본정보
         // - 휴대전화
-        param.add(new BasicNameValuePair("peter_cel_no_v1",	"010"));
-        param.add(new BasicNameValuePair("peter_cel_no_v2",	""));
-        param.add(new BasicNameValuePair("peter_cel_no_v3",	""));
+        param.add("peter_cel_no_v1",	"010");
+        param.add("peter_cel_no_v2",	"");
+        param.add("peter_cel_no_v3",	"");
         // - email
-        param.add(new BasicNameValuePair("peter_email_v1",	""));
-        param.add(new BasicNameValuePair("peter_email_v2",	"gmail.com"));
-        param.add(new BasicNameValuePair("domain",	"gmail.com"));
+        param.add("peter_email_v1",	"");
+        param.add("peter_email_v2",	"gmail.com");
+        param.add("domain",	"gmail.com");
         // - 주소
         //FIXME - zipcode
-        param.add(new BasicNameValuePair("zipcode_c",	"06762"));
-        param.add(new BasicNameValuePair("adr1_v", addr1EditText.getText().toString()));
-        param.add(new BasicNameValuePair("adr2_v", addr2EditText.getText().toString()));
+        param.add("zipcode_c",	"06762");
+        param.add("adr1_v", addr1EditText.getText().toString());
+        param.add("adr2_v", addr2EditText.getText().toString());
         // - 민원발생 지역
         //    + 주소와 동일한 지역인가?
         //    + 시도
         //    + 시군구
         //FIXME : 시도/시군구 코드는 받아오는 코드를 짜야 함
-        param.add(new BasicNameValuePair("occurrence_same_addr", "N"));
-        param.add(new BasicNameValuePair("subOrg", "6110000"));
-        param.add(new BasicNameValuePair("basicOrg",	"3210000"));
+        param.add("occurrence_same_addr", "N");
+        param.add("subOrg", "6110000");
+        param.add("basicOrg",	"3210000");
         // 나의 민원 확인 방식
         //  - 1 : 간편형
         //  - 2 : 보안형
-        param.add(new BasicNameValuePair("mypeti_view_method_c", "1"));
+        param.add("mypeti_view_method_c", "1");
         // 민원 내용
         //  - 제목
-        param.add(new BasicNameValuePair("peti_title_v", singoSubjectEditText.getText().toString()));
-        param.add(new BasicNameValuePair("getFocusPro1", "1"));
+        param.add("peti_title_v", singoSubjectEditText.getText().toString());
+        param.add("getFocusPro1", "1");
         //  - 내용
-        param.add(new BasicNameValuePair("peti_reason_l", singoContentEditText.getText().toString()));
-        param.add(new BasicNameValuePair("getFocusPro2", "1"));
+        param.add("peti_reason_l", singoContentEditText.getText().toString());
+        param.add("getFocusPro2", "1");
         // 귀하께서 위 민원과 동일 내용의 민원을 이미 행정기관 등에 제출하여 그 처리결과를 받은 적이 있습니까?
-        param.add(new BasicNameValuePair("proc_rcv_yn_c",	"N"));
+        param.add("proc_rcv_yn_c",	"N");
         // 귀하께서 제출하실 민원에 제보, 고발성 내용을 포함하고 있습니까?
-        param.add(new BasicNameValuePair("accuse_yn_c", "N"));
+        param.add("accuse_yn_c", "N");
         // 귀하의 민원신청 내용을 공유하는 것에 동의하십니까?
-        param.add(new BasicNameValuePair("open_yn_c",	"N"));
+        param.add("open_yn_c",	"N");
         // We don't know usage of hidden values
-        param.add(new BasicNameValuePair("flag",	"N"));
-        param.add(new BasicNameValuePair("menuGubun", "0"));
-        param.add(new BasicNameValuePair("menu1","pc"));
-        param.add(new BasicNameValuePair("peti_no_c",""));
-        param.add(new BasicNameValuePair("mem_id_v",	GlobalVar.getId()));
-        param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
-        param.add(new BasicNameValuePair("email_v", emailEditText.getText().toString()));
+        param.add("flag",	"N");
+        param.add("menuGubun", "0");
+        param.add("menu1","pc");
+        param.add("peti_no_c","");
+        param.add("mem_id_v",	GlobalVar.getId());
+        param.add("peti_path_gubun_c",	"00020011");
+        param.add("email_v", emailEditText.getText().toString());
         // Request code
         // - 00570008 : 전자우편,sms,서면
         // - 00570005 : 전자우편, sms
@@ -422,214 +419,217 @@ public class ReportWrite_Activity extends AppCompatActivity {
         // - 00570004 : sms
         // - 00570001 : 서면
         // - 00570003 : 나머지
-        param.add(new BasicNameValuePair("peti_nti_method_c",	"00570003"));
+        param.add("peti_nti_method_c",	"00570003");
         // ??
-        param.add(new BasicNameValuePair("ls",	"10"));
-        param.add(new BasicNameValuePair("fOpenYn",	"N"));
+        param.add("ls",	"10");
+        param.add("fOpenYn",	"N");
         // road addr code ??
         // 도로명, 지번주소관한 것들 다 쿼리로 받아와서 코드 넣어야 함
-        param.add(new BasicNameValuePair("scode",	"116504163196"));
+        param.add("scode",	"116504163196");
         // jibun addr or road addr
-        param.add(new BasicNameValuePair("jgubun", "1"));
+        param.add("jgubun", "1");
         // second setting?
         // what is difference between memId and mem_id_v
-        param.add(new BasicNameValuePair("memId", GlobalVar.getId()));
+        param.add("memId", GlobalVar.getId());
         // WTF?
-        param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q="));
-        param.add(new BasicNameValuePair("peter_name_v", nameEditText.getText().toString()));
+        param.add("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q=");
+        param.add("peter_name_v", nameEditText.getText().toString());
         // WTF? - maybe 경기도 code
         //FIXME - 주소 코드 받아와야 함
-        param.add(new BasicNameValuePair("juso2Anc_Sub",	"6110000"));
+        param.add("juso2Anc_Sub",	"6110000");
         //code":"3900000","name":"광명시"
-        param.add(new BasicNameValuePair("juso2Anc_Basic",	"3210000"));
-        param.add(new BasicNameValuePair("ChgSubAnc",	"6110000"));
-        param.add(new BasicNameValuePair("ChgBasicAnc",	"3210000"));
+        param.add("juso2Anc_Basic",	"3210000");
+        param.add("ChgSubAnc",	"6110000");
+        param.add("ChgBasicAnc",	"3210000");
         // I don't know what it is. But it seems to be set to same value in all query
         // encoded string for "[민원] 민원 신청" [https://meyerweb.com/eric/tools/decoder/]
         // maybe it is for sns sharing.
-        param.add(new BasicNameValuePair("snsTokenMessage",	"%5B%EB%AF%BC%EC%9B%90%5D+%EB%AF%BC%EC%9B%90+%EC%8B%A0%EC%B2%AD"));
+        param.add("snsTokenMessage",	"%5B%EB%AF%BC%EC%9B%90%5D+%EB%AF%BC%EC%9B%90+%EC%8B%A0%EC%B2%AD");
         // 고정 값 - 사용이유 모름
-        param.add(new BasicNameValuePair("indvdlinfo_view_agre_yn_c",	"Y"));
-        param.add(new BasicNameValuePair("mail_attch_yn_c",	"N"));
-        param.add(new BasicNameValuePair("cvpl_se_c",	"80030001"));
+        param.add("indvdlinfo_view_agre_yn_c",	"Y");
+        param.add("mail_attch_yn_c",	"N");
+        param.add("cvpl_se_c",	"80030001");
+
+        // Multimedia data
+        param.add("file1", bitMapData);
 
         // empty
-        param.add(new BasicNameValuePair("mode",	""));
-        param.add(new BasicNameValuePair("jumin_no_c",	""));
-        param.add(new BasicNameValuePair("mem_native_yn_c",	""));
-        param.add(new BasicNameValuePair("tel_no_v",	""));
-        param.add(new BasicNameValuePair("cel_no_v",	""));
-        param.add(new BasicNameValuePair("basic_chk",	""));
-        param.add(new BasicNameValuePair("evadeTargetFocusChk",	""));
-        param.add(new BasicNameValuePair("evadeReasonFocusChk",	""));
-        param.add(new BasicNameValuePair("corp_no_c",	""));
-        param.add(new BasicNameValuePair("juminNo",	""));
-        param.add(new BasicNameValuePair("residentNoCheckYn",	""));
-        param.add(new BasicNameValuePair("jumin1",	""));
-        param.add(new BasicNameValuePair("jumin2",	""));
-        param.add(new BasicNameValuePair("hPersonallykind",	""));
-        param.add(new BasicNameValuePair("prv_flag",	""));
-        param.add(new BasicNameValuePair("corp_name_v",	""));
-        param.add(new BasicNameValuePair("corp_no_c1",	""));
-        param.add(new BasicNameValuePair("corp_no_c2",	""));
-        param.add(new BasicNameValuePair("corp_no_c3",	""));
-        param.add(new BasicNameValuePair("grp_name",	""));
-        param.add(new BasicNameValuePair("peter_tel_no_v1",	""));
-        param.add(new BasicNameValuePair("peter_tel_no_v2",	""));
-        param.add(new BasicNameValuePair("peter_tel_no_v3",	""));
-        param.add(new BasicNameValuePair("primary_anc_code_v",	""));
-        param.add(new BasicNameValuePair("dmge_aplcnt_nm_v",	""));
-        param.add(new BasicNameValuePair("dmge_wrkplc_v",	""));
-        param.add(new BasicNameValuePair("dmge_adr1_v",	""));
-        param.add(new BasicNameValuePair("dmge_tel_no_v",	""));
-        param.add(new BasicNameValuePair("ancCheck",	""));
+        param.add("mode",	"");
+        param.add("jumin_no_c",	"");
+        param.add("mem_native_yn_c",	"");
+        param.add("tel_no_v",	"");
+        param.add("cel_no_v",	"");
+        param.add("basic_chk",	"");
+        param.add("evadeTargetFocusChk",	"");
+        param.add("evadeReasonFocusChk",	"");
+        param.add("corp_no_c",	"");
+        param.add("juminNo",	"");
+        param.add("residentNoCheckYn",	"");
+        param.add("jumin1",	"");
+        param.add("jumin2",	"");
+        param.add("hPersonallykind",	"");
+        param.add("prv_flag",	"");
+        param.add("corp_name_v",	"");
+        param.add("corp_no_c1",	"");
+        param.add("corp_no_c2",	"");
+        param.add("corp_no_c3",	"");
+        param.add("grp_name",	"");
+        param.add("peter_tel_no_v1",	"");
+        param.add("peter_tel_no_v2",	"");
+        param.add("peter_tel_no_v3",	"");
+        param.add("primary_anc_code_v",	"");
+        param.add("dmge_aplcnt_nm_v",	"");
+        param.add("dmge_wrkplc_v",	"");
+        param.add("dmge_adr1_v",	"");
+        param.add("dmge_tel_no_v",	"");
+        param.add("ancCheck",	"");
         break;
       case CONTENTS_SUMMARY :
-        param.add(new BasicNameValuePair("ADR1_V", addr1EditText.getText().toString()));
-        param.add(new BasicNameValuePair("PETI_TITLE_V", singoSubjectEditText.getText().toString()));
-        param.add(new BasicNameValuePair("PETI_REASON_L", singoContentEditText.getText().toString()));
+        param.add("ADR1_V", addr1EditText.getText().toString());
+        param.add("PETI_TITLE_V", singoSubjectEditText.getText().toString());
+        param.add("PETI_REASON_L", singoContentEditText.getText().toString());
         //FIXME - 사진
-        param.add(new BasicNameValuePair("PETI_DOCUMENT", "13900000;sample_image.jpg;"));
-        param.add(new BasicNameValuePair("PM_FLAG", "80030001"));
+        param.add("PETI_DOCUMENT", "13900000;sample_image.jpg;");
+        param.add("PM_FLAG", "80030001");
         break;
       case CONTENTS_WRITE :
-        param.add(new BasicNameValuePair("mode", "createPcCvreq"));
-        param.add(new BasicNameValuePair("flag", "null"));
-        param.add(new BasicNameValuePair("detailView", "Y"));
-        param.add(new BasicNameValuePair("menuGubun", "0"));
-        param.add(new BasicNameValuePair("menu1"	, "pc"));
-        param.add(new BasicNameValuePair("peti_no_c", ""));
-        param.add(new BasicNameValuePair("mem_id_v", GlobalVar.getId()));
-        param.add(new BasicNameValuePair("anc_code_v", "1320000"));
-        param.add(new BasicNameValuePair("civil_again_c", "00600001"));
-        param.add(new BasicNameValuePair("sect_error_yn_c", "Y"));
-        param.add(new BasicNameValuePair("p_sect_error_yn_c", "Y"));
-        param.add(new BasicNameValuePair("peti_path_gubun_c", "00020011"));
-        param.add(new BasicNameValuePair("peter_name_v", nameEditText.getText().toString()));
-        param.add(new BasicNameValuePair("mem_native_yn_c", ""));
-        param.add(new BasicNameValuePair("zipcode_c", "06762"));
-        param.add(new BasicNameValuePair("adr1_v", addr1EditText.getText().toString()));
-        param.add(new BasicNameValuePair("adr2_v", addr2EditText.getText().toString()));
-        param.add(new BasicNameValuePair("peti_job_c", ""));
-        param.add(new BasicNameValuePair("tel_no_v", ""));
-        param.add(new BasicNameValuePair("cel_no_v", ""));
-        param.add(new BasicNameValuePair("email_v", emailEditText.getText().toString()));
-        param.add(new BasicNameValuePair("open_yn_c", "N"));
-        param.add(new BasicNameValuePair("peti_title_v", singoSubjectEditText.getText().toString()));
-        param.add(new BasicNameValuePair("peti_reason_l", singoContentEditText.getText().toString()));
-        param.add(new BasicNameValuePair("peti_nti_method_c", "00570003"));
-        param.add(new BasicNameValuePair("passwd_v", ""));
-        param.add(new BasicNameValuePair("civil_rel_name_v", ""));
-        param.add(new BasicNameValuePair("civil_rel_tel_no_v", ""));
-        param.add(new BasicNameValuePair("civil_rel_zipcode_c", ""));
-        param.add(new BasicNameValuePair("civil_rel_addr_v", ""));
-        param.add(new BasicNameValuePair("civil_rel_addr1_v", ""));
+        param.add("mode", "createPcCvreq");
+        param.add("flag", "null");
+        param.add("detailView", "Y");
+        param.add("menuGubun", "0");
+        param.add("menu1"	, "pc");
+        param.add("peti_no_c", "");
+        param.add("mem_id_v", GlobalVar.getId());
+        param.add("anc_code_v", "1320000");
+        param.add("civil_again_c", "00600001");
+        param.add("sect_error_yn_c", "Y");
+        param.add("p_sect_error_yn_c", "Y");
+        param.add("peti_path_gubun_c", "00020011");
+        param.add("peter_name_v", nameEditText.getText().toString());
+        param.add("mem_native_yn_c", "");
+        param.add("zipcode_c", "06762");
+        param.add("adr1_v", addr1EditText.getText().toString());
+        param.add("adr2_v", addr2EditText.getText().toString());
+        param.add("peti_job_c", "");
+        param.add("tel_no_v", "");
+        param.add("cel_no_v", "");
+        param.add("email_v", emailEditText.getText().toString());
+        param.add("open_yn_c", "N");
+        param.add("peti_title_v", singoSubjectEditText.getText().toString());
+        param.add("peti_reason_l", singoContentEditText.getText().toString());
+        param.add("peti_nti_method_c", "00570003");
+        param.add("passwd_v", "");
+        param.add("civil_rel_name_v", "");
+        param.add("civil_rel_tel_no_v", "");
+        param.add("civil_rel_zipcode_c", "");
+        param.add("civil_rel_addr_v", "");
+        param.add("civil_rel_addr1_v", "");
         //FIXME
-        param.add(new BasicNameValuePair("file1_name",	"sample_image.jpg"));
-        param.add(new BasicNameValuePair("file2_name", ""));
-        param.add(new BasicNameValuePair("file3_name", ""));
-        param.add(new BasicNameValuePair("file4_name", ""));
-        param.add(new BasicNameValuePair("file5_name", ""));
-        param.add(new BasicNameValuePair("file1_size", "153240"));
-        param.add(new BasicNameValuePair("file2_size", ""));
-        param.add(new BasicNameValuePair("file3_size", ""));
-        param.add(new BasicNameValuePair("file4_size", ""));
-        param.add(new BasicNameValuePair("file5_size", ""));
+        param.add("file1_name",	"sample_image.jpg");
+        param.add("file2_name", "");
+        param.add("file3_name", "");
+        param.add("file4_name", "");
+        param.add("file5_name", "");
+        param.add("file1_size", "153240");
+        param.add("file2_size", "");
+        param.add("file3_size", "");
+        param.add("file4_size", "");
+        param.add("file5_size", "");
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add(new BasicNameValuePair("file1", "/attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
-        param.add(new BasicNameValuePair("file2"	, ""));
-        param.add(new BasicNameValuePair("file3", ""));
-        param.add(new BasicNameValuePair("file4", ""));
-        param.add(new BasicNameValuePair("file5", ""));
+        param.add("file1", "/attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg");
+        param.add("file2"	, "");
+        param.add("file3", "");
+        param.add("file4", "");
+        param.add("file5", "");
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add(new BasicNameValuePair("file1_dir", "/attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/"));
-        param.add(new BasicNameValuePair("file2_dir", ""));
-        param.add(new BasicNameValuePair("file3_dir", ""));
-        param.add(new BasicNameValuePair("file4_dir", ""));
-        param.add(new BasicNameValuePair("file5_dir", ""));
+        param.add("file1_dir", "/attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/");
+        param.add("file2_dir", "");
+        param.add("file3_dir", "");
+        param.add("file4_dir", "");
+        param.add("file5_dir", "");
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add(new BasicNameValuePair("file1_temp_dir", "/attach04/temp/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg"));
-        param.add(new BasicNameValuePair("file2_temp_dir", ""));
-        param.add(new BasicNameValuePair("file3_temp_dir", ""));
-        param.add(new BasicNameValuePair("file4_temp_dir", ""));
-        param.add(new BasicNameValuePair("file5_temp_dir", ""));
-        param.add(new BasicNameValuePair("open_chk_c", ""));
-        param.add(new BasicNameValuePair("grp3_peti_yn_c", "N"));
-        param.add(new BasicNameValuePair("grp_name", ""));
-        param.add(new BasicNameValuePair("mail_attch_yn_c", "Y"));
-        param.add(new BasicNameValuePair("anc_c2", "1140100"));
-        param.add(new BasicNameValuePair("auto_anc_v", "1140100"));
-        param.add(new BasicNameValuePair("peti_anc_v", "1320000"));
-        param.add(new BasicNameValuePair("pre_peti_no_c", ""));
-        param.add(new BasicNameValuePair("miss_yn_c", "N"));
-        param.add(new BasicNameValuePair("peti_ip_v", "124.53.50.34"));
-        param.add(new BasicNameValuePair("anc_name_v", "경찰청"));
-        param.add(new BasicNameValuePair("multi_anc_yn_c", "N"));
-        param.add(new BasicNameValuePair("org_auto_anc_c", "1140100"));
-        param.add(new BasicNameValuePair("multi_status_c", ""));
-        param.add(new BasicNameValuePair("ombuds", ""));
-        param.add(new BasicNameValuePair("org_civil_again_c", ""));
-        param.add(new BasicNameValuePair("manual_acrc_yn_c", "N"));
-        param.add(new BasicNameValuePair("manual_yn_c", "Y"));
-        param.add(new BasicNameValuePair("auto_yn_c", "N"));
-        param.add(new BasicNameValuePair("upAncCode", "1140100"));
-        param.add(new BasicNameValuePair("seq_n", ""));
-        param.add(new BasicNameValuePair("retFAQ", "0"));
-        param.add(new BasicNameValuePair("occurrence_area", ""));
-        param.add(new BasicNameValuePair("subOrg", "6110000"));
-        param.add(new BasicNameValuePair("basicOrg", "3210000"));
-        param.add(new BasicNameValuePair("occurrence_same_addr", "Y"));
-        param.add(new BasicNameValuePair("corp_no_c", ""));
-        param.add(new BasicNameValuePair("corp_name_v", ""));
-        param.add(new BasicNameValuePair("fOpenYn", "N"));
+        param.add("file1_temp_dir", "/attach04/temp/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg");
+        param.add("file2_temp_dir", "");
+        param.add("file3_temp_dir", "");
+        param.add("file4_temp_dir", "");
+        param.add("file5_temp_dir", "");
+        param.add("open_chk_c", "");
+        param.add("grp3_peti_yn_c", "N");
+        param.add("grp_name", "");
+        param.add("mail_attch_yn_c", "Y");
+        param.add("anc_c2", "1140100");
+        param.add("auto_anc_v", "1140100");
+        param.add("peti_anc_v", "1320000");
+        param.add("pre_peti_no_c", "");
+        param.add("miss_yn_c", "N");
+        param.add("peti_ip_v", "124.53.50.34");
+        param.add("anc_name_v", "경찰청");
+        param.add("multi_anc_yn_c", "N");
+        param.add("org_auto_anc_c", "1140100");
+        param.add("multi_status_c", "");
+        param.add("ombuds", "");
+        param.add("org_civil_again_c", "");
+        param.add("manual_acrc_yn_c", "N");
+        param.add("manual_yn_c", "Y");
+        param.add("auto_yn_c", "N");
+        param.add("upAncCode", "1140100");
+        param.add("seq_n", "");
+        param.add("retFAQ", "0");
+        param.add("occurrence_area", "");
+        param.add("subOrg", "6110000");
+        param.add("basicOrg", "3210000");
+        param.add("occurrence_same_addr", "Y");
+        param.add("corp_no_c", "");
+        param.add("corp_name_v", "");
+        param.add("fOpenYn", "N");
         //FIXME : 파일 아이디 받아오는 부분을 모르겠음
         //바로 전 리퀘스트에 쓰이는 부분임
-        param.add(new BasicNameValuePair("file1_id", fileId));
+        param.add("file1_id", fileId);
         //
-        param.add(new BasicNameValuePair("file2_id"	, ""));
-        param.add(new BasicNameValuePair("file3_id", ""));
-        param.add(new BasicNameValuePair("file4_id", ""));
-        param.add(new BasicNameValuePair("file5_id", ""));
-        param.add(new BasicNameValuePair("mypeti_view_method_c", "1"));
-        param.add(new BasicNameValuePair("scode", "116504163196"));
-        param.add(new BasicNameValuePair("jgubun", "1"));
-        param.add(new BasicNameValuePair("cvpl_se_c", "80030001"));
-        param.add(new BasicNameValuePair("dmge_aplcnt_nm_v", ""));
-        param.add(new BasicNameValuePair("dmge_wrkplc_v", ""));
-        param.add(new BasicNameValuePair("dmge_adr1_v", ""));
-        param.add(new BasicNameValuePair("dmge_tel_no_v", ""));
-        param.add(new BasicNameValuePair("jumin_no_c", ""));
-        param.add(new BasicNameValuePair("dupInfo", ""));
-        param.add(new BasicNameValuePair("third_person_sup_yn_c", "Y"));
-        param.add(new BasicNameValuePair("hPersonallykind", ""));
-        param.add(new BasicNameValuePair("evadeTargerCode", ""));
-        param.add(new BasicNameValuePair("evadeTargerCode1", ""));
-        param.add(new BasicNameValuePair("evadeReasonFocusChk", ""));
-        param.add(new BasicNameValuePair("primary_anc_code_v", ""));
-        param.add(new BasicNameValuePair("proc_rcv_yn_c", "N"));
-        param.add(new BasicNameValuePair("prv_flag", ""));
-        param.add(new BasicNameValuePair("ancCheck", ""));
-        param.add(new BasicNameValuePair("corp_no_c1", ""));
-        param.add(new BasicNameValuePair("corp_no_c2", ""));
-        param.add(new BasicNameValuePair("corp_no_c3", ""));
-        param.add(new BasicNameValuePair("consent_yn", ""));
-        param.add(new BasicNameValuePair("onto_use_yn", "0"));
-        param.add(new BasicNameValuePair("safe_civil_rate", ""));
-        param.add(new BasicNameValuePair("better_civil_rate", ""));
-        param.add(new BasicNameValuePair("accuse_yn_c", "N"));
-        param.add(new BasicNameValuePair("indvdlinfo_view_agre_yn_c", "Y"));
-        param.add(new BasicNameValuePair("snsTokenMessage", "%EC%A0%95%EC%9D%98%ED%95%84%EC%9A%94"));
-        param.add(new BasicNameValuePair("chkNotSelectedYn", "N"));
-        param.add(new BasicNameValuePair("evade_yn_c", "N"));
-        param.add(new BasicNameValuePair("evade_target_v", ""));
-        param.add(new BasicNameValuePair("evade_reason_v", ""));
-        param.add(new BasicNameValuePair("trafic_violtn_yn_c", ""));
-        param.add(new BasicNameValuePair("vhcle_no_v", vehicleEditText.getText().toString()));
-        param.add(new BasicNameValuePair("police_peti_gubun_c", "100"));
+        param.add("file2_id"	, "");
+        param.add("file3_id", "");
+        param.add("file4_id", "");
+        param.add("file5_id", "");
+        param.add("mypeti_view_method_c", "1");
+        param.add("scode", "116504163196");
+        param.add("jgubun", "1");
+        param.add("cvpl_se_c", "80030001");
+        param.add("dmge_aplcnt_nm_v", "");
+        param.add("dmge_wrkplc_v", "");
+        param.add("dmge_adr1_v", "");
+        param.add("dmge_tel_no_v", "");
+        param.add("jumin_no_c", "");
+        param.add("dupInfo", "");
+        param.add("third_person_sup_yn_c", "Y");
+        param.add("hPersonallykind", "");
+        param.add("evadeTargerCode", "");
+        param.add("evadeTargerCode1", "");
+        param.add("evadeReasonFocusChk", "");
+        param.add("primary_anc_code_v", "");
+        param.add("proc_rcv_yn_c", "N");
+        param.add("prv_flag", "");
+        param.add("ancCheck", "");
+        param.add("corp_no_c1", "");
+        param.add("corp_no_c2", "");
+        param.add("corp_no_c3", "");
+        param.add("consent_yn", "");
+        param.add("onto_use_yn", "0");
+        param.add("safe_civil_rate", "");
+        param.add("better_civil_rate", "");
+        param.add("accuse_yn_c", "N");
+        param.add("indvdlinfo_view_agre_yn_c", "Y");
+        param.add("snsTokenMessage", "%EC%A0%95%EC%9D%98%ED%95%84%EC%9A%94");
+        param.add("chkNotSelectedYn", "N");
+        param.add("evade_yn_c", "N");
+        param.add("evade_target_v", "");
+        param.add("evade_reason_v", "");
+        param.add("trafic_violtn_yn_c", "");
+        param.add("vhcle_no_v", vehicleEditText.getText().toString());
+        param.add("police_peti_gubun_c", "100");
         //?
-        param.add(new BasicNameValuePair("add_vhcle_no_v", ""));
-        param.add(new BasicNameValuePair("search_vhcle_no_yn", "N"));
-        param.add(new BasicNameValuePair("birthdoayMenuOpt", "Y"));
+        param.add("add_vhcle_no_v", "");
+        param.add("search_vhcle_no_yn", "N");
+        param.add("birthdoayMenuOpt", "Y");
         break;
       default :
         break;

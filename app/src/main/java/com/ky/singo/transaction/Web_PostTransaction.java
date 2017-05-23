@@ -16,6 +16,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 /**
@@ -32,25 +33,29 @@ public class Web_PostTransaction {
     httpPost = new HttpPost(url);
   }
 
-  public boolean send(ArrayList<NameValuePair> param, byte [] image, String test) {
+  public boolean send(Web_Param param) {
     int status;
     Web_Cookie  cookie = Web_Cookie .getInstance();
 
     MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
-    // Include text body
 
     try {
-      for (NameValuePair nvp : param) {
-        //builder.addTextBody(nvp.getName(), nvp.getValue(), ContentType.create(HTTP.PLAIN_TEXT_TYPE, HTTP.));
-        builder.addPart(nvp.getName(), new StringBody(nvp.getValue(), Charset.forName("EUC-KR")));
+      // include text body
+      for (Map.Entry<String, String> elem : param.getTextEntry()) {
+        builder.addPart(elem.getKey(), new StringBody(elem.getValue(), Charset.forName("EUC-KR")));
       }
 
-      if (!test.equals("")) {
-        Log.d(TRANSACTION, "IMAGE_EXIST");
-        ByteArrayBody bab = new ByteArrayBody(image, "sample_image.jpg");
-        builder.addPart(test, bab);
+      // attach multimedia body
+      for (Map.Entry<String, byte []> elem : param.getVideoEntry()) {
+        // "sample_image.jpg"는 구분자로 사용됨
+        // reportWrite Activity에서 "file1" ID에 경로 + 파일 구분하기 위한 이름을 명시함
+        //  - /attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg
+        // 위 경로의 이름과 아래 ByteArrayBody 생성자에서 사용하는 구분자의 이름이 같아야 함
+        ByteArrayBody bab = new ByteArrayBody(elem.getValue(), "sample_image.jpg");
+        builder.addPart(elem.getKey(), bab);
       }
+
       // Send a packet
       HttpClient httpClient = new DefaultHttpClient();
       httpPost.setEntity(builder.build());
