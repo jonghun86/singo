@@ -79,6 +79,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
     vehicleEditText = (EditText) findViewById(R.id.vehicle_field);
     progressBar = (ProgressBar) findViewById(R.id.progressBar_submit);
 
+    /* invisible progressbar */
+    progressBar.setVisibility(View.INVISIBLE);
+
     Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample_image);
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -251,6 +254,18 @@ public class ReportWrite_Activity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPreExecute() {
+      super.onPreExecute();
+      progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+      super.onPostExecute(s);
+      progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
     protected String doInBackground(ReportData... params) {
       Boolean isSuccess;
 
@@ -283,6 +298,18 @@ public class ReportWrite_Activity extends AppCompatActivity {
     ReportUploadGetTask(String url) {
       this.url = url;
       transaction = new Web_GetTransaction(url);
+    }
+
+    @Override
+    protected void onPreExecute() {
+      super.onPreExecute();
+      progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+      super.onPostExecute(s);
+      progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
