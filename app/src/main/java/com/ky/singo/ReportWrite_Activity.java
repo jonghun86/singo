@@ -425,7 +425,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         // what is difference between memId and mem_id_v
         param.add(new BasicNameValuePair("memId", GlobalVar.getId()));
         // WTF?
-        param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEA9ynrPjBrDb/LVDT8f/lW6XO62LtAufyVn3GupPV0rIk="));
+        param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q="));
         param.add(new BasicNameValuePair("peter_name_v", nameEditText.getText().toString()));
         // WTF? - maybe 경기도 code
         //FIXME - 주소 코드 받아와야 함

@@ -43,12 +43,16 @@ public class Login_Activity extends AppCompatActivity {
     final TextView IdEditText = (EditText)findViewById(R.id.login_id);
     final EditText pwEditText = (EditText)findViewById(R.id.login_pw);
 
+    /* temp */
+    attemptLogin("ggungnae", "2qnsrl.dkagh");
+
     // Button click events
     Button signInBtn = (Button) findViewById(R.id.sign_in_button);
     signInBtn.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View view) {
-        attemptLogin(IdEditText.getText().toString(), pwEditText.getText().toString());
+        //attemptLogin(IdEditText.getText().toString(), pwEditText.getText().toString());
+        attemptLogin("ggungnae", "2qnsrl.dkagh");
       }
     });
   }
