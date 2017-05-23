@@ -37,7 +37,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="Input your name"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:text="Input your name" />
 
         <EditText
             android:id="@+id/email_field"
@@ -46,7 +47,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="Your Email"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:text="Your Email" />
 
     </LinearLayout>
 
@@ -62,7 +64,8 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Your Addr1"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:text="Your Addr1" />
 
     <TextView
         android:id="@+id/textView4_addr2"
@@ -81,7 +84,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Your Addr2"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:text="Your Addr2" />
 
         <Button
             android:id="@+id/select_picture"
@@ -98,16 +102,18 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Singo subject"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:text="Singo subject" />
 
     <EditText
         android:id="@+id/contents_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.74"
         android:ems="10"
         android:hint="Singo Contents"
         android:inputType="textMultiLine"
-        android:layout_weight="0.74" />
+        android:text="Singo Contents" />
 
     <TextView
         android:id="@+id/textView3"
@@ -121,7 +127,8 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="서울 가 1234"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:text="서울 가 1234" />
 
     <Button
         android:id="@+id/report_button"
