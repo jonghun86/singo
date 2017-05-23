@@ -12,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ky.singo.transaction.Web_GetTransaction;
@@ -28,6 +31,12 @@ import org.jsoup.nodes.Element;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+/* TODO List
+ * 1. Upload/Submit 시 Progress Bar
+ * 2. 하드코딩 -> 변수화
+ * 3. 로그인 각자 아이디로
+ */
+
 /**
  * Created by mmyjh on 2017-05-06.
  */
@@ -40,7 +49,14 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
   // TODO Remove global member variable
   String fileId;
-
+  private EditText nameEditText;
+  private EditText addr1EditText;
+  private EditText addr2EditText;
+  private EditText emailEditText;
+  private EditText singoSubjectEditText;
+  private EditText singoContentEditText;
+  private EditText vehicleEditText;
+  private ProgressBar progressBar;
 
   private final String ID_REPORT_WRITE_QUERY = "REPORT_WRITE";
   private static final int SELECT_PICTURE = 1;
@@ -53,8 +69,16 @@ public class ReportWrite_Activity extends AppCompatActivity {
     Log.d(ID_REPORT_WRITE_QUERY, "onCreate");
     setContentView(R.layout.reportwrite);
 
-    // to be removed
-    // for fast debug
+    /* Resource init */
+    nameEditText = (EditText) findViewById(R.id.name_field);
+    addr1EditText = (EditText) findViewById(R.id.Addr1_field);
+    addr2EditText = (EditText) findViewById(R.id.addr2_field);
+    emailEditText = (EditText) findViewById(R.id.email_field);
+    singoSubjectEditText = (EditText) findViewById(R.id.subject_field);
+    singoContentEditText = (EditText) findViewById(R.id.contents_field);
+    vehicleEditText = (EditText) findViewById(R.id.vehicle_field);
+    progressBar = (ProgressBar) findViewById(R.id.progressBar_submit);
+
     Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sample_image);
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
@@ -304,7 +328,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         //  - 개인 N, 단체 Y, 기업 C
         //  - 신청인 이름
         param.add(new BasicNameValuePair("grp3_peti_yn_c",	"N"));
-        param.add(new BasicNameValuePair("userName",	"유종훈"));
+        param.add(new BasicNameValuePair("userName",	nameEditText.getText().toString()));
         // 신청인 기본정보
         // - 휴대전화
         param.add(new BasicNameValuePair("peter_cel_no_v1",	"010"));
@@ -315,13 +339,15 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("peter_email_v2",	"gmail.com"));
         param.add(new BasicNameValuePair("domain",	"gmail.com"));
         // - 주소
+        //FIXME - zipcode
         param.add(new BasicNameValuePair("zipcode_c",	"06762"));
-        param.add(new BasicNameValuePair("adr1_v", "서울특별시 서초구 바우뫼로11길 76,"));
-        param.add(new BasicNameValuePair("adr2_v", "104호"));
+        param.add(new BasicNameValuePair("adr1_v", addr1EditText.getText().toString()));
+        param.add(new BasicNameValuePair("adr2_v", addr2EditText.getText().toString()));
         // - 민원발생 지역
         //    + 주소와 동일한 지역인가?
         //    + 시도
         //    + 시군구
+        //FIXME : 시도/시군구 코드는 받아오는 코드를 짜야 함
         param.add(new BasicNameValuePair("occurrence_same_addr", "N"));
         param.add(new BasicNameValuePair("subOrg", "6110000"));
         param.add(new BasicNameValuePair("basicOrg",	"3210000"));
@@ -331,10 +357,10 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("mypeti_view_method_c", "1"));
         // 민원 내용
         //  - 제목
-        param.add(new BasicNameValuePair("peti_title_v", "테스트 - 제목"));
+        param.add(new BasicNameValuePair("peti_title_v", singoSubjectEditText.getText().toString()));
         param.add(new BasicNameValuePair("getFocusPro1", "1"));
         //  - 내용
-        param.add(new BasicNameValuePair("peti_reason_l", "테스트 - 내용"));
+        param.add(new BasicNameValuePair("peti_reason_l", singoContentEditText.getText().toString()));
         param.add(new BasicNameValuePair("getFocusPro2", "1"));
         // 귀하께서 위 민원과 동일 내용의 민원을 이미 행정기관 등에 제출하여 그 처리결과를 받은 적이 있습니까?
         param.add(new BasicNameValuePair("proc_rcv_yn_c",	"N"));
@@ -347,9 +373,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("menuGubun", "0"));
         param.add(new BasicNameValuePair("menu1","pc"));
         param.add(new BasicNameValuePair("peti_no_c",""));
-        param.add(new BasicNameValuePair("mem_id_v",	"mmyjh86"));
+        param.add(new BasicNameValuePair("mem_id_v",	GlobalVar.getId()));
         param.add(new BasicNameValuePair("peti_path_gubun_c",	"00020011"));
-        param.add(new BasicNameValuePair("email_v",	"mmyjh86@gmail.com"));
+        param.add(new BasicNameValuePair("email_v", emailEditText.getText().toString()));
         // Request code
         // - 00570008 : 전자우편,sms,서면
         // - 00570005 : 전자우편, sms
@@ -364,16 +390,18 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("ls",	"10"));
         param.add(new BasicNameValuePair("fOpenYn",	"N"));
         // road addr code ??
+        // 도로명, 지번주소관한 것들 다 쿼리로 받아와서 코드 넣어야 함
         param.add(new BasicNameValuePair("scode",	"116504163196"));
         // jibun addr or road addr
         param.add(new BasicNameValuePair("jgubun", "1"));
         // second setting?
         // what is difference between memId and mem_id_v
-        param.add(new BasicNameValuePair("memId","mmyjh86"));
+        param.add(new BasicNameValuePair("memId", GlobalVar.getId()));
         // WTF?
         param.add(new BasicNameValuePair("dupInfo",	"MC0GCCqGSIb3DQIJAyEA9ynrPjBrDb/LVDT8f/lW6XO62LtAufyVn3GupPV0rIk="));
-        param.add(new BasicNameValuePair("peter_name_v","유종훈"));
+        param.add(new BasicNameValuePair("peter_name_v", nameEditText.getText().toString()));
         // WTF? - maybe 경기도 code
+        //FIXME - 주소 코드 받아와야 함
         param.add(new BasicNameValuePair("juso2Anc_Sub",	"6110000"));
         //code":"3900000","name":"광명시"
         param.add(new BasicNameValuePair("juso2Anc_Basic",	"3210000"));
@@ -420,10 +448,10 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("ancCheck",	""));
         break;
       case CONTENTS_SUMMARY :
-        param.add(new BasicNameValuePair("ADR1_V", "서울특별시 서초구"));
-        param.add(new BasicNameValuePair("PETI_TITLE_V", "테스트 - 제목"));
-        param.add(new BasicNameValuePair("PETI_REASON_L", "테스트 - 내용"));
-        //FIXME
+        param.add(new BasicNameValuePair("ADR1_V", addr1EditText.getText().toString()));
+        param.add(new BasicNameValuePair("PETI_TITLE_V", singoSubjectEditText.getText().toString()));
+        param.add(new BasicNameValuePair("PETI_REASON_L", singoContentEditText.getText().toString()));
+        //FIXME - 사진
         param.add(new BasicNameValuePair("PETI_DOCUMENT", "13900000;sample_image.jpg;"));
         param.add(new BasicNameValuePair("PM_FLAG", "80030001"));
         break;
@@ -434,24 +462,24 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("menuGubun", "0"));
         param.add(new BasicNameValuePair("menu1"	, "pc"));
         param.add(new BasicNameValuePair("peti_no_c", ""));
-        param.add(new BasicNameValuePair("mem_id_v", "mmyjh86"));
+        param.add(new BasicNameValuePair("mem_id_v", GlobalVar.getId()));
         param.add(new BasicNameValuePair("anc_code_v", "1320000"));
         param.add(new BasicNameValuePair("civil_again_c", "00600001"));
         param.add(new BasicNameValuePair("sect_error_yn_c", "Y"));
         param.add(new BasicNameValuePair("p_sect_error_yn_c", "Y"));
         param.add(new BasicNameValuePair("peti_path_gubun_c", "00020011"));
-        param.add(new BasicNameValuePair("peter_name_v"	, "유종훈"));
+        param.add(new BasicNameValuePair("peter_name_v", nameEditText.getText().toString()));
         param.add(new BasicNameValuePair("mem_native_yn_c", ""));
         param.add(new BasicNameValuePair("zipcode_c", "06762"));
-        param.add(new BasicNameValuePair("adr1_v", "서울특별시 서초구 바우뫼로11길 76,"));
-        param.add(new BasicNameValuePair("adr2_v", "104호"));
+        param.add(new BasicNameValuePair("adr1_v", addr1EditText.getText().toString()));
+        param.add(new BasicNameValuePair("adr2_v", addr2EditText.getText().toString()));
         param.add(new BasicNameValuePair("peti_job_c", ""));
         param.add(new BasicNameValuePair("tel_no_v", ""));
         param.add(new BasicNameValuePair("cel_no_v", ""));
-        param.add(new BasicNameValuePair("email_v", "mmyjh86@gmail.com"));
+        param.add(new BasicNameValuePair("email_v", emailEditText.getText().toString()));
         param.add(new BasicNameValuePair("open_yn_c", "N"));
-        param.add(new BasicNameValuePair("peti_title_v", "테스트 - 제목"));
-        param.add(new BasicNameValuePair("peti_reason_l", "테스트 - 내용"));
+        param.add(new BasicNameValuePair("peti_title_v", singoSubjectEditText.getText().toString()));
+        param.add(new BasicNameValuePair("peti_reason_l", singoContentEditText.getText().toString()));
         param.add(new BasicNameValuePair("peti_nti_method_c", "00570003"));
         param.add(new BasicNameValuePair("passwd_v", ""));
         param.add(new BasicNameValuePair("civil_rel_name_v", ""));
@@ -459,6 +487,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("civil_rel_zipcode_c", ""));
         param.add(new BasicNameValuePair("civil_rel_addr_v", ""));
         param.add(new BasicNameValuePair("civil_rel_addr1_v", ""));
+        //FIXME
         param.add(new BasicNameValuePair("file1_name",	"sample_image.jpg"));
         param.add(new BasicNameValuePair("file2_name", ""));
         param.add(new BasicNameValuePair("file3_name", ""));
@@ -558,7 +587,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add(new BasicNameValuePair("evade_target_v", ""));
         param.add(new BasicNameValuePair("evade_reason_v", ""));
         param.add(new BasicNameValuePair("trafic_violtn_yn_c", ""));
-        param.add(new BasicNameValuePair("vhcle_no_v", "TEST Vehicle"));
+        param.add(new BasicNameValuePair("vhcle_no_v", vehicleEditText.getText().toString()));
         param.add(new BasicNameValuePair("police_peti_gubun_c", "100"));
         //?
         param.add(new BasicNameValuePair("add_vhcle_no_v", ""));

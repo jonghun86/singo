@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ky.singo.transaction.Web_PostTransaction;
@@ -38,24 +40,17 @@ public class Login_Activity extends AppCompatActivity {
     setContentView(R.layout.login_activity);
 
     //
-    //TextView IdEditText = (EditText)findViewById(R.id.editText);
-    //EditText pwEditText = (EditText)findViewById(R.id.editText);
+    final TextView IdEditText = (EditText)findViewById(R.id.login_id);
+    final EditText pwEditText = (EditText)findViewById(R.id.login_pw);
 
     // Button click events
     Button signInBtn = (Button) findViewById(R.id.sign_in_button);
     signInBtn.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View view) {
-        attemptLogin();
+        attemptLogin(IdEditText.getText().toString(), pwEditText.getText().toString());
       }
     });
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // To be removed...
-    // For test
-    smgThread = new SinMunGoLoginTask("mmyjh86", "2qnsrl.dkagh");
-    smgThread.execute((Void) null);
-    //////////////////////////////////////////////////////////////////////////////////
   }
 
   /**
@@ -63,26 +58,14 @@ public class Login_Activity extends AppCompatActivity {
    * If there are form errors (invalid email, missing fields, etc.), the
    * errors are presented and no actual login attempt is made.
    */
-  private void attemptLogin() {
+  private void attemptLogin(String id, String pw) {
     if (smgThread != null) {
       return;
     }
-   /*
-    // Store values at the time of the login attempt.
-    String email = mEmailView.getText().toString();
-    String password = mPasswordView.getText().toString();
-     */
-
-
-    boolean cancel = false;
-
-    // it is not empty
-    if (!cancel) {
-
-    } else {
-      //smgThread = new SinMunGoLoginTask(email, password);
+      Log.d(ID_USER_LOGIN, id);
+      GlobalVar.setId(id);
+      smgThread = new SinMunGoLoginTask(id, pw);
       smgThread.execute((Void) null);
-    }
   }
 
 

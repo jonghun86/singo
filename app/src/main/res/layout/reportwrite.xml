@@ -1,35 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="1">
 
-    <TextView
-        android:id="@+id/textView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Vehicle number" />
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/vehicle_num1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        <TextView
+            android:id="@+id/textView_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Name" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Vehicle number" />
-
-    <EditText
-        android:id="@+id/vehicle_num2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Email" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -37,26 +31,109 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/picture_path"
+            android:id="@+id/name_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Input your name"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/email_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="Your Email"
+            android:inputType="textEmailAddress" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView3_addr1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Addr1" />
+
+    <EditText
+        android:id="@+id/Addr1_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Your Addr1"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/textView4_addr2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="addr2" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/addr2_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name" />
+            android:hint="Your Addr2"
+            android:inputType="textPersonName" />
 
         <Button
             android:id="@+id/select_picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="select" />
+            android:text="Picture/Video" />
 
     </LinearLayout>
+
+    <EditText
+        android:id="@+id/subject_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Singo subject"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/contents_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Singo Contents"
+        android:inputType="textMultiLine"
+        android:layout_weight="0.74" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Vehicle Number" />
+
+    <EditText
+        android:id="@+id/vehicle_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="서울 가 1234"
+        android:inputType="textPersonName" />
 
     <Button
         android:id="@+id/report_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Submit" />
+
+    <ProgressBar
+        android:id="@+id/progressBar_submit"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:visibility="invisible" />
 
 </LinearLayout>
