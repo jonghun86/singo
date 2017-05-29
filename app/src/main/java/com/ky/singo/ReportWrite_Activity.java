@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -68,6 +69,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     Log.d(ID_REPORT_WRITE_QUERY, "onCreate");
     setContentView(R.layout.reportwrite);
+
+    Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 
     /* Resource init */
     nameEditText = (EditText) findViewById(R.id.name_field);
@@ -439,6 +442,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add("mail_attch_yn_c",	"N");
         param.add("cvpl_se_c",	"80030001");
 
+        // FIXME
         // Multimedia data
         param.add("file1", bitMapData);
 
@@ -513,7 +517,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add("civil_rel_zipcode_c", "");
         param.add("civil_rel_addr_v", "");
         param.add("civil_rel_addr1_v", "");
-        //FIXME
+        //FIXME - 사진 이름
         param.add("file1_name",	"sample_image.jpg");
         param.add("file2_name", "");
         param.add("file3_name", "");
@@ -571,7 +575,6 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add("corp_no_c", "");
         param.add("corp_name_v", "");
         param.add("fOpenYn", "N");
-        //FIXME : 파일 아이디 받아오는 부분을 모르겠음
         //바로 전 리퀘스트에 쓰이는 부분임
         param.add("file1_id", fileId);
         //
