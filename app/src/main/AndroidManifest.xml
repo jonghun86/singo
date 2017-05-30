@@ -34,6 +34,12 @@
         <activity
             android:name=".ReportWrite_Activity"
             android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".MapTest"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAXoMw5Zr95Pa_0STjLTZSG9IPR0_eaXls"/>
     </application>
 
 </manifest>
