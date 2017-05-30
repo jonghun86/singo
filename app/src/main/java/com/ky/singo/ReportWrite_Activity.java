@@ -1,6 +1,8 @@
 package com.ky.singo;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.ky.singo.transaction.Web_GetTransaction;
 import com.ky.singo.transaction.Web_Param;
 import com.ky.singo.transaction.Web_PostTransaction;
@@ -32,6 +36,7 @@ import org.jsoup.select.Elements;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+
 /* TODO List
  * 1. Upload/Submit 시 Progress Bar
  * 2. 하드코딩 -> 변수화
@@ -43,10 +48,10 @@ import java.util.ArrayList;
  */
 
 public class ReportWrite_Activity extends AppCompatActivity {
-  final String fileUploadUrl    = "https://www.epeople.go.kr/applex_wdigm/applet/jsp/fileup_cu_real.jsp";
+  final String fileUploadUrl = "https://www.epeople.go.kr/applex_wdigm/applet/jsp/fileup_cu_real.jsp";
   final String contentUploadUrl = "https://www.epeople.go.kr/jsp/user/pc/cvreq/UPcRecommendOrg.jsp";
   final String summaryUploadUrl = "https://www.epeople.go.kr/onto/ajax/ajax_onto_recommand_req.jsp";
-  final String userInfoReqUrl   = "http://www.epeople.go.kr/jsp/user/pc/cvreq/UPcCvreqForm.jsp";
+  final String userInfoReqUrl = "http://www.epeople.go.kr/jsp/user/pc/cvreq/UPcCvreqForm.jsp";
 
   // TODO Remove global member variable
   String fileId;
@@ -63,6 +68,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
   private static final int SELECT_PICTURE = 1;
   private String selectedImagePath;
   byte[] bitMapData;
+  private GoogleMap googleMap;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +76,18 @@ public class ReportWrite_Activity extends AppCompatActivity {
     Log.d(ID_REPORT_WRITE_QUERY, "onCreate");
     setContentView(R.layout.reportwrite);
 
-    Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+      // TODO: Consider calling
+      //    ActivityCompat#requestPermissions
+      // here to request the missing permissions, and then overriding
+      //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+      //                                          int[] grantResults)
+      // to handle the case where the user grants the permission. See the documentation
+      // for ActivityCompat#requestPermissions for more details.
+      return;
+    }
+    googleMap.setMyLocationEnabled(true);
+
 
     /* Resource init */
     nameEditText = (EditText) findViewById(R.id.name_field);
