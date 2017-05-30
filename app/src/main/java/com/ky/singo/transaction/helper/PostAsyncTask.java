@@ -13,13 +13,17 @@ import org.apache.http.util.EntityUtils;
  * Created by mmyjh on 2017-05-23.
  */
 
+
+
 public class PostAsyncTask extends AsyncTask<Web_Param, Void, String> {
   private final String ID_POSTASYNCTASK_QUERY = "SINGO_POSTASYNCTASK";
   String url;
+  Web_PostTransaction.TransactionType trType;
   Web_PostTransaction transaction;
 
-  PostAsyncTask(String url) {
+  public PostAsyncTask(String url, Web_PostTransaction.TransactionType trType) {
     this.url = url;
+    this.trType = trType;
     transaction = new Web_PostTransaction(url);
   }
 
@@ -29,7 +33,7 @@ public class PostAsyncTask extends AsyncTask<Web_Param, Void, String> {
 
     // Todo
     Web_Param param = params[0];
-    isSuccess = transaction.send(param);
+    isSuccess = transaction.send(param, trType);
     if (isSuccess) {
       final HttpEntity entity = transaction.getResponse().getEntity();
       try {

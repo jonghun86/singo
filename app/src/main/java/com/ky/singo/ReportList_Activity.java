@@ -36,6 +36,7 @@ public class ReportList_Activity extends AppCompatActivity {
     findViewById(R.id.reportWriteButton).setOnClickListener(
       new Button.OnClickListener() {
         public void onClick(View v) {
+          /*
           // intent from login activity
           Intent previousIntent = getIntent();
           String memId = null;
@@ -45,7 +46,7 @@ public class ReportList_Activity extends AppCompatActivity {
           else {
             Log.d(ID_REPORT_LIST_QUERY, "Null intent that sent from login activity.");
           }
-
+          */
           // intent to be sent to reportWrite activity
           Intent currIntent = new Intent(ReportList_Activity.this, ReportWrite_Activity.class);
           startActivity(currIntent);

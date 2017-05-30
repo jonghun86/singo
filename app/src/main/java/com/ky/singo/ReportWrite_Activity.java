@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.ky.singo.transaction.Web_GetTransaction;
 import com.ky.singo.transaction.Web_Param;
 import com.ky.singo.transaction.Web_PostTransaction;
+import com.ky.singo.transaction.helper.PostAsyncTask;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -86,7 +86,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       // for ActivityCompat#requestPermissions for more details.
       return;
     }
-    googleMap.setMyLocationEnabled(true);
+    //googleMap.setMyLocationEnabled(true);
 
 
     /* Resource init */
@@ -195,7 +195,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       // Upload Video Files
-      uploadTask    = new ReportUploadPostTask(fileUploadUrl);
+      uploadTask    = new ReportUploadPostTask(fileUploadUrl,
+        Web_PostTransaction.TransactionType.MULTIPART);
       webParam      = getPredefinedParam(PostReqType.MULTIMEDIA_UPLOAD);
       responseBody  = uploadTask.execute(webParam).get();
       if (responseBody == null) {
@@ -206,7 +207,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
-      uploadTask    = new ReportUploadPostTask(contentUploadUrl);
+      uploadTask    = new ReportUploadPostTask(contentUploadUrl,
+        Web_PostTransaction.TransactionType.MULTIPART);
       webParam      = getPredefinedParam(PostReqType.CONTENTS_REQUEST);
       responseBody  = uploadTask.execute(webParam).get();
       // [HACK] Response is arrived but server sent error because of wrong request. Server sent
@@ -226,7 +228,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
-      uploadTask    = new ReportUploadPostTask(summaryUploadUrl);
+      uploadTask    = new ReportUploadPostTask(summaryUploadUrl,
+        Web_PostTransaction.TransactionType.POST);
       webParam      = getPredefinedParam(PostReqType.CONTENTS_SUMMARY);
       responseBody  = uploadTask.execute(webParam).get();
       if (responseBody == null) {
@@ -238,8 +241,9 @@ public class ReportWrite_Activity extends AppCompatActivity {
 
       /////////////////////////////////////////////////////////////////////////////////////////////
       //
-
-      uploadTask    = new ReportUploadPostTask(contentUploadUrl);
+        /*
+      uploadTask    = new ReportUploadPostTask(contentUploadUrl,
+        Web_PostTransaction.TransactionType.POST);
       webParam      = getPredefinedParam(PostReqType.CONTENTS_WRITE);
       responseBody  = uploadTask.execute(webParam).get();
       if (responseBody == null) {
@@ -248,7 +252,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
         return false;
       }
       Log.d("----2", responseBody);
-
+          */
 
       return true;
     } catch (Exception e) {
@@ -258,6 +262,24 @@ public class ReportWrite_Activity extends AppCompatActivity {
   }
 
 
+  public class ReportUploadPostTask extends PostAsyncTask {
+    ReportUploadPostTask(String url, Web_PostTransaction.TransactionType TrType) {
+        super(url, TrType);
+      }
+
+    @Override
+    protected void onPreExecute() {
+      super.onPreExecute();
+      progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onPostExecute(String s) {
+      super.onPostExecute(s);
+      progressBar.setVisibility(View.INVISIBLE);
+    }
+  }
+      /*
   public class ReportUploadPostTask extends AsyncTask<Web_Param, Void, String> {
     String url;
     Web_PostTransaction transaction;
@@ -299,7 +321,7 @@ public class ReportWrite_Activity extends AppCompatActivity {
       return null;
     }
   }
-
+     */
   public class ReportUploadGetTask extends AsyncTask<Web_Param, Void, String> {
     String url;
     Web_GetTransaction transaction;
@@ -371,7 +393,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
         //  - 개인 N, 단체 Y, 기업 C
         //  - 신청인 이름
         param.add("grp3_peti_yn_c",	"N");
-        param.add("userName",	nameEditText.getText().toString());
+        // FIXME
+        param.add("userName", "유종훈");
         // 신청인 기본정보
         // - 휴대전화
         param.add("peter_cel_no_v1",	"010");
@@ -384,8 +407,8 @@ public class ReportWrite_Activity extends AppCompatActivity {
         // - 주소
         //FIXME - zipcode
         param.add("zipcode_c",	"06762");
-        param.add("adr1_v", addr1EditText.getText().toString());
-        param.add("adr2_v", addr2EditText.getText().toString());
+        param.add("adr1_v", "서울특별시 서초구 바우뫼로11길 76,");
+        param.add("adr2_v", "104호");
         // - 민원발생 지역
         //    + 주소와 동일한 지역인가?
         //    + 시도
@@ -416,9 +439,11 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add("menuGubun", "0");
         param.add("menu1","pc");
         param.add("peti_no_c","");
-        param.add("mem_id_v",	GlobalVar.getId());
+        param.add("mem_id_v",	"mmyjh86");
         param.add("peti_path_gubun_c",	"00020011");
-        param.add("email_v", emailEditText.getText().toString());
+
+        // FIXME
+        param.add("email_v", "mmyjh86@gmail.com");
         // Request code
         // - 00570008 : 전자우편,sms,서면
         // - 00570005 : 전자우편, sms
@@ -439,10 +464,11 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add("jgubun", "1");
         // second setting?
         // what is difference between memId and mem_id_v
-        param.add("memId", GlobalVar.getId());
+        param.add("memId", "mmyjh86");
         // WTF?
         param.add("dupInfo",	"MC0GCCqGSIb3DQIJAyEAqpfr2ecwUkZQ1pugdusBdjP8Tb46ylwJMcAY76vPh1Q=");
-        param.add("peter_name_v", nameEditText.getText().toString());
+        // FIXME
+        param.add("peter_name_v", "유종훈");
         // WTF? - maybe 경기도 code
         //FIXME - 주소 코드 받아와야 함
         param.add("juso2Anc_Sub",	"6110000");
@@ -459,9 +485,6 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add("mail_attch_yn_c",	"N");
         param.add("cvpl_se_c",	"80030001");
 
-        // FIXME
-        // Multimedia data
-        param.add("file1", bitMapData);
 
         // empty
         param.add("mode",	"");
@@ -493,6 +516,12 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add("dmge_adr1_v",	"");
         param.add("dmge_tel_no_v",	"");
         param.add("ancCheck",	"");
+
+        // FIXME
+        // Multimedia data
+        param.add("file1", bitMapData);
+
+
         break;
       case CONTENTS_SUMMARY :
         param.add("ADR1_V", addr1EditText.getText().toString());
@@ -546,19 +575,19 @@ public class ReportWrite_Activity extends AppCompatActivity {
         param.add("file4_size", "");
         param.add("file5_size", "");
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add("file1", "/attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg");
+        param.add("file1", "/attach04/2017/5/24/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg");
         param.add("file2"	, "");
         param.add("file3", "");
         param.add("file4", "");
         param.add("file5", "");
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add("file1_dir", "/attach04/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/");
+        param.add("file1_dir", "/attach04/2017/5/24/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/");
         param.add("file2_dir", "");
         param.add("file3_dir", "");
         param.add("file4_dir", "");
         param.add("file5_dir", "");
         //FIXME - 날짜별로 업로드 경로가 다름
-        param.add("file1_temp_dir", "/attach04/temp/2017/5/23/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg");
+        param.add("file1_temp_dir", "/attach04/temp/2017/5/24/jsp/user/pc/cvreq/UPcRecommendOrg.jsp/sample_image.jpg");
         param.add("file2_temp_dir", "");
         param.add("file3_temp_dir", "");
         param.add("file4_temp_dir", "");

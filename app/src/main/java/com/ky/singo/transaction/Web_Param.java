@@ -24,11 +24,9 @@ public class Web_Param {
     videoData.put(mediaTag, mediaSource);
   }
 
-  public Set<Map.Entry<String, String>> getTextEntry() {
-    return textData.entrySet();
-  }
+  public Set<Map.Entry<String, String>> getTextEntry() { return textData.entrySet(); }
 
-  public Set<Map.Entry<String, byte []>> getVideoEntry() {
+  public Set<Map.Entry<String, byte[]>> getVideoEntry() {
     return videoData.entrySet();
   }
 }

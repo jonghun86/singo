@@ -44,7 +44,7 @@ public class Login_Activity extends AppCompatActivity {
     final EditText pwEditText = (EditText)findViewById(R.id.login_pw);
 
     /* temp */
-    attemptLogin("ggungnae", "2qnsrl.dkagh");
+    attemptLogin("mmyjh86", "2qnsrl.dkagh");
 
     // Button click events
     Button signInBtn = (Button) findViewById(R.id.sign_in_button);
